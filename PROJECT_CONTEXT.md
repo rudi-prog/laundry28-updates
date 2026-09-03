@@ -108,16 +108,44 @@ dependencies:
 ---
 
 ## ✅ Progress Checklist
+
+### Sudah Selesai ✅
 - [x] Diskusi konsep & alur sistem
 - [x] Setup folder proyek & struktur Clean Architecture
 - [x] Buat `PROJECT_CONTEXT.md`
 - [x] Buat script SQL setup lengkap (`supabase_final_setup.sql`)
-- [ ] **Jalankan SQL di Supabase Dashboard** ← LANGKAH SELANJUTNYA
-- [ ] Testing login admin (email: admin@laundry28.com, password: admin123)
-- [ ] Coding halaman Login Admin
-- [ ] Coding halaman Input Pesanan (Dashboard Admin)
-- [ ] Coding halaman Tracking Customer
-- [ ] Testing & Deployment ke Vercel
+- [x] Coding halaman Login Admin (email/password → Supabase Auth)
+- [x] Coding halaman Dashboard Admin (input pesanan, kelola staff)
+- [x] Coding halaman Tracking Customer (tanpa login, via link WA)
+- [x] **Fix: Missing INTERNET permission di AndroidManifest.xml** ← ROOT CAUSE LOGIN MOBILE GAGAL
+- [x] **Fix: False positive SSL error di `_formatError()` auth_cubit.dart**
+- [x] Login berhasil di vivo 1807 (release mode) — akun `rudi@gmail.com`
+- [x] Git initialized & semua file committed
+
+### Belum Selesai / Next Steps 🔜
+- [ ] Testing login admin lain (`admin@laundry28.com`)
+- [ ] Testing register flow di mobile
+- [ ] Testing error handling (putus internet, timeout, password salah)
+- [ ] Deploy Flutter Web ke Vercel/Netlify
+- [ ] Optimasi performa & UI polish
+
+---
+
+## 🔧 Latest Changes (9 September 2026)
+
+### Bug Fix: Mobile Admin Login Gagal
+**Root Cause:**
+1. `INTERNET` permission hilang di `AndroidManifest.xml` → DNS resolution gagal (`errno = 7`)
+2. False positive SSL error karena project ID Supabase `iqdmlsslzhlchbuiklwf` mengandung substring `'ssl'`
+
+**Perbaikan:**
+- Tambah `<uses-permission android:name="android.permission.INTERNET" />` di manifest
+- Perbaiki `_formatError()` di `auth_cubit.dart`: prioritas cek `SocketException`, SSL check lebih spesifik (hindari match project ID)
+- Login berhasil di vivo 1807 release mode
+
+**File yang diubah:**
+- `android/app/src/main/AndroidManifest.xml`
+- `lib/features/admin/cubit/auth_cubit.dart`
 
 ---
 
