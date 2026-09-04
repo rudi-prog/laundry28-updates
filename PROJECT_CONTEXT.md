@@ -121,6 +121,12 @@ dependencies:
 - [x] **Fix: False positive SSL error di `_formatError()` auth_cubit.dart**
 - [x] Login berhasil di vivo 1807 (release mode) — akun `rudi@gmail.com`
 - [x] Git initialized & semua file committed
+- [x] **Web Tracking Page standalone** (`web_tracking/index.html`) — deployed ke Vercel ✅
+- [x] **Fix: Infinite loading di web tracking** — syntax error duplikat variabel `supabase` + fungsi `initSupabase()` tidak dipanggil
+- [x] **Dashboard filter & search** — dropdown status filter + search bar
+- [x] **New order screen UI improvements**
+- [x] **Order repository timeout (10s) + debug logging** untuk troubleshooting
+- [x] **Auth repository query consistency** (.limit(1) instead of .maybeSingle())
 
 ### Belum Selesai / Next Steps 🔜
 - [ ] Testing login admin lain (`admin@laundry28.com`)
@@ -146,6 +152,47 @@ dependencies:
 **File yang diubah:**
 - `android/app/src/main/AndroidManifest.xml`
 - `lib/features/admin/cubit/auth_cubit.dart`
+
+---
+
+## 🔧 Latest Changes (4 September 2026)
+
+### Feature: Web Tracking Page Standalone + Dashboard Enhancements
+
+**Web Tracking Page (`web_tracking/index.html`):**
+- Halaman tracking standalone tanpa Flutter — pure HTML/JS/CSS
+- Load Supabase JS SDK dari CDN, inisialisasi client di browser
+- Tampilan order detail dengan status stepper visual (6 tahap)
+- Responsive design untuk mobile viewing
+
+**Bug Fix: Infinite Loading di Web Tracking:**
+1. **Syntax Error #1:** Duplikat deklarasi variabel `supabase` — global Supabase SDK sudah expose `supabase` sebagai variable, tapi kode lokal juga declare `const supabase = ...`. 
+   - **Fix:** Rename local variable ke `client` → `const client = supabase.createClient(...)`
+2. **Syntax Error #2:** Fungsi `initSupabase()` tidak pernah dipanggil → loading spinner stuck selamanya.
+   - **Fix:** Tambah `DOMContentLoaded` listener + fallback invoke di akhir `<script>`
+
+**Dashboard Admin Enhancements:**
+- Status filter dropdown: Semua / Diterima / Dicuci / Dikeringkan / Disetrika / Siap Diambil / Selesai
+- Search bar untuk cari berdasarkan nama pelanggan atau kode tracking
+- DashboardScreen diubah dari StatelessWidget ke StatefulWidget (stateful)
+
+**Order Repository Improvements:**
+- Timeout 10 detik pada `fetchOrderByTrackingCode()` — mencegah hanging request
+- Debug logging (`debugPrint`) di setiap tahap query: sebelum, response, not found, found
+- Rethrow error untuk handling lebih baik di cubit layer
+
+**File yang diubah:**
+- `web_tracking/index.html` (baru)
+- `web_tracking/.gitignore` (baru)
+- `lib/core/config/web_tracking_config.dart` (baru)
+- `lib/features/admin/data/repositories/order_repository.dart`
+- `lib/features/admin/presentation/screens/dashboard_screen.dart`
+- `lib/features/admin/presentation/screens/new_order_screen.dart`
+- `lib/features/admin/presentation/widgets/order_card.dart`
+- `lib/features/tracking/cubit/tracking_cubit.dart`
+- `lib/features/admin/data/repositories/auth_repository.dart`
+
+**Commit:** `c2d558c` — master branch
 
 ---
 
