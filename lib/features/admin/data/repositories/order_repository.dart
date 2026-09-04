@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/supabase/supabase_client.dart';
 import '../../../../shared/models/order_model.dart';
@@ -32,7 +33,7 @@ class OrderRepository {
           .map<OrderModel>((json) => OrderModel.fromJson(json))
           .toList();
     } catch (e) {
-      print('fetchOrders error: $e');
+      debugPrint('fetchOrders error: $e');
       return [];
     }
   }
@@ -40,17 +41,33 @@ class OrderRepository {
   /// Fetch order by tracking code
   Future<OrderModel?> fetchOrderByTrackingCode(String trackingCode) async {
     try {
-      final response = await _client
+      debugPrint('[REPO] Querying Supabase for tracking: $trackingCode');
+      final queryFuture = _client
           .from('orders')
           .select()
           .eq('tracking_code', trackingCode)
-          .maybeSingle();
+          .limit(1);
 
-      if (response == null) return null;
-      return OrderModel.fromJson(response);
+      final response = await queryFuture.timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          debugPrint('[REPO] TIMEOUT after 10s for tracking: $trackingCode');
+          throw Exception('Request timeout (10 detik). Periksa koneksi internet.');
+        },
+      );
+
+      debugPrint('[REPO] Response received, length: ${response.length}');
+      if (response.isEmpty) {
+        debugPrint('[REPO] No order found for: $trackingCode');
+        return null;
+      }
+
+      final order = OrderModel.fromJson(response.first);
+      debugPrint('[REPO] Order found: ${order.trackingCode} - ${order.status}');
+      return order;
     } catch (e) {
-      print('fetchOrderByTrackingCode error: $e');
-      return null;
+      debugPrint('[REPO] fetchOrderByTrackingCode error: $e');
+      rethrow;
     }
   }
 
@@ -85,16 +102,15 @@ class OrderRepository {
             'total_price': order.totalPrice?.toInt(),
             'created_at': DateTime.now().toIso8601String(),
           })
-          .select()
-          .maybeSingle();
+          .select();
 
-      if (response == null) {
+      if (response.isEmpty) {
         throw Exception('Failed to create order');
       }
 
-      return OrderModel.fromJson(response);
+      return OrderModel.fromJson(response.first);
     } catch (e) {
-      print('createOrder error: $e');
+      debugPrint('createOrder error: $e');
       rethrow;
     }
   }
@@ -112,19 +128,18 @@ class OrderRepository {
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('id', orderId)
-          .select()
-          .maybeSingle();
+          .select();
 
-      if (response == null) {
+      if (response.isEmpty) {
         throw Exception('Order not found');
       }
 
-      return OrderModel.fromJson(response);
+      return OrderModel.fromJson(response.first);
     } on PostgrestException catch (e) {
-      print('PostgrestException: ${e.message} (Code: ${e.code})');
+      debugPrint('PostgrestException: ${e.message} (Code: ${e.code})');
       rethrow;
     } catch (e) {
-      print('updateOrderStatus error: $e');
+      debugPrint('updateOrderStatus error: $e');
       rethrow;
     }
   }

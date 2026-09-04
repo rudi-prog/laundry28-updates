@@ -25,11 +25,11 @@ class AuthRepository {
               .from('staff')
               .select()
               .eq('email', email.trim().toLowerCase())
-              .maybeSingle();
+              .limit(1);
 
-          if (staffResponse != null) {
-            print('📋 Staff found: ${staffResponse['full_name']}');
-            return StaffModel.fromJson(staffResponse);
+          if (staffResponse.isNotEmpty) {
+            print('📋 Staff found: ${staffResponse.first['full_name']}');
+            return StaffModel.fromJson(staffResponse.first);
           }
         } on PostgrestException catch (e) {
           // Tabel staff tidak ditemukan atau query gagal — tapi auth berhasil

@@ -6,6 +6,7 @@ import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../cubit/new_order_cubit.dart';
 import '../../cubit/dashboard_cubit.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class NewOrderScreen extends StatefulWidget {
   const NewOrderScreen({super.key});
@@ -22,6 +23,11 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
   String _selectedService = 'Cuci Komplit';
   DateTime? _estimatedDate;
   TimeOfDay? _estimatedTime;
+
+  final List<String> _months = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
 
   final List<String> _services = [
     'Cuci Komplit',
@@ -107,7 +113,27 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Pesanan Baru')),
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          leading: (Theme.of(context).platform == TargetPlatform.iOS ||
+                  Theme.of(context).platform == TargetPlatform.android)
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                  onPressed: () => context.go(AppRoutes.dashboard),
+                )
+              : null,
+          title: const Text(
+            'Pesanan Baru',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(
@@ -115,30 +141,69 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
+                // Section Header - Customer Info
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_outline, color: Colors.white, size: 24),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'INFORMASI PELANGGAN',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.white,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Customer Name & Phone Card
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('INFO PELANGGAN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF757575))),
-                        const SizedBox(height: 16),
                         CustomTextField(
                           labelText: 'Nama Pelanggan',
                           controller: _customerNameController,
-                          prefixIcon: const Icon(Icons.person_outline),
-                          validator: (v) => (v == null || v.isEmpty) ? 'Nama wajib diisi' : null,
+                          prefixIcon: Icon(Icons.person_outline, color: AppColors.primary),
+                          hintText: 'Masukkan nama pelanggan',
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Nama wajib diisi';
+                            if (v.length < 3) return 'Nama minimal 3 karakter';
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
-                          labelText: 'No. WhatsApp',
+                          labelText: 'No. Telepon',
                           controller: _customerPhoneController,
-                          prefixIcon: const Icon(Icons.phone_outlined),
-                          hintText: '08xxxxxxxxxx',
                           keyboardType: TextInputType.phone,
+                          prefixIcon: Icon(Icons.phone_outlined, color: AppColors.primary),
+                          hintText: '08xxxxxxxxxx',
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'No. WA wajib diisi';
-                            if (v.length < 10) return 'Nomor tidak valid';
+                            if (v == null || v.isEmpty) return 'No. telepon wajib diisi';
+                            if (v.length < 10) return 'Nomor telepon tidak valid';
                             return null;
                           },
                         ),
@@ -147,27 +212,93 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
+
+                // Section Header - Service Info
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.warning,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.local_laundry_service, color: Colors.white, size: 24),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'DETAIL PESANAN',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.white,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Service & Weight Card
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('JENIS LAYANAN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF757575))),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          initialValue: _selectedService,
-                          decoration: const InputDecoration(labelText: 'Pilih Layanan'),
-                          items: _services.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-                          onChanged: (v) => setState(() => _selectedService = v!),
-                          validator: (v) => (v == null) ? 'Pilih layanan' : null,
+                        Text(
+                          'JENIS LAYANAN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.border),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            initialValue: _selectedService,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              border: InputBorder.none,
+                            ),
+                            items: _services.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                            onChanged: (v) => setState(() => _selectedService = v!),
+                            validator: (v) => (v == null) ? 'Pilih layanan' : null,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'BERAT BAJA',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         CustomTextField(
                           labelText: 'Berat (kg)',
                           controller: _weightController,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          prefixIcon: const Icon(Icons.scale),
+                          prefixIcon: Icon(Icons.scale_outlined, color: AppColors.primary),
+                          hintText: 'Contoh: 1.0',
                           validator: (v) {
                             if (v == null || v.isEmpty) return 'Berat wajib diisi';
                             if (double.tryParse(v) == null || double.parse(v) <= 0) {
@@ -181,48 +312,144 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Card(
+
+                // Section Header - Estimated Time
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.success,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.schedule_outlined, color: Colors.white, size: 24),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'WAKTU SELESAI',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.white,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Estimated Time Card
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('ESTIMASI SELESAI', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF757575))),
-                        const SizedBox(height: 16),
+                        // Date Picker
                         InkWell(
                           onTap: _selectDate,
-                          child: InputDecorator(
-                            decoration: const InputDecoration(labelText: 'Tanggal', prefixIcon: Icon(Icons.calendar_today)),
-                            child: Text(_estimatedDate == null ? 'Pilih tanggal' : '${_estimatedDate!.day}/${_estimatedDate!.month}/${_estimatedDate!.year}'),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.border),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.calendar_today_outlined, color: AppColors.primary),
+                                const SizedBox(width: 16),
+                                Text(
+                                  _estimatedDate != null
+                                      ? '📅 ${_formatDate(_estimatedDate!)}'
+                                      : 'Pilih tanggal selesai',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: _estimatedDate != null
+                                        ? AppColors.textPrimary
+                                        : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
+
+                        // Time Picker
                         InkWell(
                           onTap: _selectTime,
-                          child: InputDecorator(
-                            decoration: const InputDecoration(labelText: 'Waktu', prefixIcon: Icon(Icons.access_time)),
-                            child: Text(_estimatedTime == null ? 'Pilih waktu' : _estimatedTime!.format(context)),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.border),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.access_time_outlined, color: AppColors.primary),
+                                const SizedBox(width: 16),
+                                Text(
+                                  _estimatedTime != null
+                                      ? '🕐 ${_formatTime(_estimatedTime!)}'
+                                      : 'Pilih waktu selesai',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: _estimatedTime != null
+                                        ? AppColors.textPrimary
+                                        : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
+
+                // Save Button
                 BlocBuilder<NewOrderCubit, NewOrderState>(
                   builder: (context, state) {
                     return CustomButton(
                       label: 'SIMPAN PESANAN',
-                      onPressed: state is! NewOrderLoading ? _handleSave : null,
+                      onPressed: state is NewOrderLoading ? null : _handleSave,
                       isLoading: state is NewOrderLoading,
+                      height: 56,
                     );
                   },
                 ),
+
+                const SizedBox(height: 32),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '''${date.day.toString().padLeft(2, '0')} ${_months[date.month - 1]} ${date.year}''';
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final hour = time.hourOfPeriod.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '''$hour:$minute''';
   }
 }

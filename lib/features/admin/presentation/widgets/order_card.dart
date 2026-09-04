@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import '../../../../shared/models/order_model.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../features/admin/cubit/dashboard_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/config/web_tracking_config.dart';
+import 'package:flutter/services.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderModel order;
@@ -217,10 +220,83 @@ class OrderCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
+              const SizedBox(height: 12),
+              // WhatsApp Tracking Button
+              _buildWhatsAppButton(context),
+              const SizedBox(height: 8),
               // Progress Bar
               _buildProgressBar(order.status),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWhatsAppButton(BuildContext ctx) {
+    final phone = order.customerPhone;
+    if (phone.isEmpty) return const SizedBox.shrink();
+
+    // Format phone for WhatsApp: remove leading 0, add Indonesia country code
+    String waPhone = phone.trim();
+    if (waPhone.startsWith('0')) {
+      waPhone = '62' + waPhone.substring(1);
+    } else if (!waPhone.startsWith('+') && !waPhone.startsWith('62')) {
+      waPhone = '62' + waPhone;
+    }
+
+    final trackingUrl = WebTrackingConfig.getTrackingUrl(order.trackingCode);
+    final message =
+        "Halo, saya ingin cek status pesanan Laundry28 saya:\n\n"
+        "Kode Tracking: *${order.trackingCode}*\n"
+        "Layanan: ${order.serviceType}\n"
+        "Tanggal: ${DateFormat('dd MMM yyyy', 'id_ID').format(order.createdAt)}\n\n"
+        "Cek status pesanan Anda di sini:\n$trackingUrl\n\n"
+        "Terima kasih! \u{1F64F}";
+
+    final uri = Uri.parse("https://wa.me/$waPhone?text=${Uri.encodeComponent(message)}");
+
+    return InkWell(
+      onTap: () async {
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          // Fallback: copy to clipboard
+          await Clipboard.setData(ClipboardData(text: uri.toString()));
+          ScaffoldMessenger.of(ctx)
+              .showSnackBar(
+                const SnackBar(
+                  content: Text('Link tracking disalin ke clipboard'),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                ),
+              );
+        }
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF25D366).withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF25D366).withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.chat_outlined, color: const Color(0xFF25D366), size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Kirim Link Tracking via WhatsApp',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF25D366),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -9,8 +9,56 @@ import '../widgets/order_card.dart';
 import '../../../../shared/models/order_model.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  String _selectedStatus = 'Semua';
+  final TextEditingController _searchController = TextEditingController();
+
+  static const List<String> _statusFilterOptions = [
+    'Semua',
+    'Diterima',
+    'Dicuci',
+    'Dikeringkan',
+    'Disetrika',
+    'Siap Diambil',
+    'Selesai',
+  ];
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<OrderModel> _getFilteredOrders(List<OrderModel> orders) {
+    var filtered = orders;
+
+    // Filter by status
+    if (_selectedStatus != 'Semua') {
+      filtered = filtered.where((o) => o.status == _selectedStatus).toList();
+    }
+
+    // Filter by search text
+    final query = _searchController.text.trim().toLowerCase();
+    if (query.isNotEmpty) {
+      filtered = filtered.where((o) {
+        return o.trackingCode.toLowerCase().contains(query) ||
+            o.customerName.toLowerCase().contains(query) ||
+            o.customerPhone.contains(query);
+      }).toList();
+    }
+
+    // Sort by createdAt descending (newest first)
+    filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return filtered;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,58 +168,149 @@ class DashboardScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 24),
                           _buildStatsGrid(orders),
-                          const SizedBox(height: 24),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Pesanan Hari Ini',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
-                                ),
+                          const SizedBox(height: 20),
+
+                          // Search Field
+                          TextField(
+                            controller: _searchController,
+                            textInputAction: TextInputAction.search,
+                            onChanged: (value) => setState(() {}),
+                            onSubmitted: (_) => setState(() {}),
+                            decoration: InputDecoration(
+                              hintText: 'Cari tracking code, nama, atau no. HP...',
+                              prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary),
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.tune, size: 18),
+                                          onPressed: () {
+                                            setState(() {});
+                                            FocusScope.of(context).unfocus();
+                                          },
+                                        ),
+                                        const SizedBox(width: 4),
+                                        IconButton(
+                                          icon: const Icon(Icons.clear, size: 18),
+                                          onPressed: () {
+                                            _searchController.clear();
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: AppColors.surface,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
                               ),
-                              TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  'Lihat Semua',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Status Filter Chips
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: _statusFilterOptions.map((status) {
+                                final isSelected = _selectedStatus == status;
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: FilterChip(
+                                    label: Text(status),
+                                    selected: isSelected,
+                                    onSelected: (_) {
+                                      setState(() => _selectedStatus = status);
+                                    },
+                                    selectedColor: AppColors.primary.withValues(alpha: 0.15),
+                                    checkmarkColor: AppColors.primary,
+                                    labelStyle: TextStyle(
+                                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color: isSelected ? AppColors.primary : AppColors.border,
+                                        width: isSelected ? 1.5 : 1,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   ),
-                                ),
-                              ),
-                            ],
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  orders.isEmpty
+                  // Filtered results header + Reset button
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Pesanan (${_getFilteredOrders(orders).length})',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          if (_selectedStatus != 'Semua' || _searchController.text.isNotEmpty)
+                            TextButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  _selectedStatus = 'Semua';
+                                  _searchController.clear();
+                                });
+                              },
+                              icon: const Icon(Icons.clear_all, size: 16),
+                              label: const Text('Reset Filter'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppColors.primary,
+                                padding: EdgeInsets.zero,
+                                minimumSize: const Size(0, 0),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Filtered order list
+                  _getFilteredOrders(orders).isEmpty && orders.isNotEmpty
                       ? SliverToBoxAdapter(
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.inbox_outlined,
-                                  size: 80,
+                                  Icons.filter_list_off_outlined,
+                                  size: 64,
                                   color: AppColors.textTertiary,
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'Belum ada pesanan',
+                                  'Tidak ada pesanan yang cocok',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     color: AppColors.textSecondary,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 4),
                                 Text(
-                                  'Pesanan baru akan muncul di sini',
+                                  'Coba ubah filter atau kata kunci pencarian',
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 12,
                                     color: AppColors.textTertiary,
                                   ),
                                 ),
@@ -183,15 +322,50 @@ class DashboardScreen extends StatelessWidget {
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               if (index == 0) return const SizedBox(height: 8);
-                              final order = orders[index - 1];
+                              final filtered = _getFilteredOrders(orders);
+                              final order = filtered[index - 1];
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                                 child: OrderCard(order: order),
                               );
                             },
-                            childCount: orders.length + 1,
+                            childCount: _getFilteredOrders(orders).isEmpty ? 0 : _getFilteredOrders(orders).length + 1,
                           ),
                         ),
+
+                  // Empty state when no orders at all
+                  if (orders.isEmpty)
+                    SliverToBoxAdapter(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.inbox_outlined,
+                              size: 80,
+                              color: AppColors.textTertiary,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Belum ada pesanan',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Pesanan baru akan muncul di sini',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textTertiary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
                   const SliverToBoxAdapter(child: SizedBox(height: 20)),
                 ],
               ),

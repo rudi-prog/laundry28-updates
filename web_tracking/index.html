@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry28 - Tracking Pesanan</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .container { background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 100%; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white; padding: 30px 24px; text-align: center; }
+        .header-icon { width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 36px; }
+        .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .content { padding: 24px; }
+        .loading, .error { text-align: center; padding: 60px 20px; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top-color: #2196F3; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error h2 { color: #f44336; font-size: 20px; margin-bottom: 8px; }
+        .error p { color: #757575; font-size: 14px; }
+        .order-card { background: #f8f9fa; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e0e0e0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #757575; font-size: 14px; font-weight: 500; }
+        .info-value { color: #212121; font-size: 14px; font-weight: 600; text-align: right; }
+        .status-section { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .status-title { font-size: 14px; font-weight: 700; color: #757575; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-stepper { display: flex; justify-content: space-between; align-items: center; position: relative; }
+        .status-step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; z-index: 1; }
+        .step-circle { width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 8px; }
+        .step-circle.active { background: #4CAF50; color: white; box-shadow: 0 4px 12px rgba(76,175,80,0.4); }
+        .step-label { font-size: 11px; color: #9e9e9e; text-align: center; font-weight: 500; }
+        .step-label.active { color: #4CAF50; font-weight: 700; }
+        .step-line { position: absolute; top: 20px; left: 10%; right: 10%; height: 3px; background: #e0e0e0; z-index: 0; }
+        .step-line-fill { height: 100%; background: #4CAF50; transition: width 0.5s ease; }
+        .footer { text-align: center; padding: 20px; color: #757575; font-size: 12px; border-top: 1px solid #e0e0e0; }
+        .tracking-code-display { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        .tracking-code-display .label { font-size: 12px; opacity: 0.9; margin-bottom: 4px; }
+        .tracking-code-display .code { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container loading" id="loadingState">
+            <div class="header"><div class="header-icon">G</div><h1>Laundry28</h1><p>Mencari pesanan...</p></div>
+            <div class="content"><div class="spinner"></div><p style="color:#757575;font-size:14px;">Mohon tunggu sebentar</p></div>
+        </div>
+        <div class="container error" id="errorState" style="display:none">
+            <div class="header"><h1>Pesanan Tidak Ditemukan</h1></div>
+            <div class="content"><p style="color:#757575;font-size:14px;margin-bottom:20px">Kode tracking tidak valid atau pesanan tidak ditemukan.</p><button onclick="window.history.back()" style="background:#2196F3;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer">Kembali</button></div>
+        </div>
+        <div class="container" id="orderState" style="display:none">
+            <div class="header"><div class="header-icon">G</div><h1>Laundry28</h1><p>Tracking Pesanan</p></div>
+            <div class="content">
+                <div class="tracking-code-display"><div class="label">KODE TRACKING</div><div class="code" id="trackingCodeDisplay"></div></div>
+                <div class="order-card">
+                    <div class="info-row"><span class="info-label">Nama Pelanggan</span><span class="info-value" id="customerName"></span></div>
+                    <div class="info-row"><span class="info-label">Layanan</span><span class="info-value" id="serviceType"></span></div>
+                    <div class="info-row" id="weightRow" style="display:none"><span class="info-label">Berat</span><span class="info-value" id="weight"></span></div>
+                    <div class="info-row" id="estimatedRow" style="display:none"><span class="info-label">Estimasi Selesai</span><span class="info-value" id="estimatedTime"></span></div>
+                    <div class="info-row"><span class="info-label">Tanggal Diterima</span><span class="info-value" id="createdAt"></span></div>
+                </div>
+                <div class="status-section">
+                    <div class="status-title">Status Pesanan</div>
+                    <div class="status-stepper">
+                        <div class="step-line"><div class="step-line-fill" id="stepLineFill"></div></div>
+                        <div class="status-step"><div class="step-circle" id="step1">OK</div><span class="step-label" id="label1">Diterima</span></div>
+                        <div class="status-step"><div class="step-circle" id="step2">WC</div><span class="step-label" id="label2">Dicuci</span></div>
+                        <div class="status-step"><div class="step-circle" id="step3">DR</div><span class="step-label" id="label3">Kering</span></div>
+                        <div class="status-step"><div class="step-circle" id="step4">IR</div><span class="step-label" id="label4">Setrika</span></div>
+                        <div class="status-step"><div class="step-circle" id="step5">OK</div><span class="step-label" id="label5">Siap Diambil</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">Laundry28 - Tracking Laundry</div>
+        </div>
+    </div>
+    <script>
+        const supabaseUrl = "https://iqdmlsslzhlchbuiklwf.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlxZG1sc3NsemhsY2hidWlrbHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjM3NzIsImV4cCI6MjA4OTczOTc3Mn0.YPw0Zqgrtw9dYu5FCBXF67C5kOOfGzARzxcprlyMcp0";
+        let client;
+
+        function initSupabase() {
+            if (window.supabase && window.supabase.createClient) {
+                client = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log("✅ Supabase client initialized");
+                const urlParams = new URLSearchParams(window.location.search);
+                const trackingCode = urlParams.get("code") || "";
+                if (!trackingCode) { showError("Kode tracking tidak valid"); }
+                else { fetchOrder(trackingCode); }
+            } else {
+                console.error("❌ Supabase library not loaded from CDN");
+                setTimeout(initSupabase, 500);
+            }
+        }
+
+        async function fetchOrder(code) {
+            try {
+                const { data, error } = await client.from("orders").select("*").eq("tracking_code", code).limit(1);
+                if (error || !data || data.length === 0) { showError("Pesanan tidak ditemukan"); return; }
+                displayOrder(data[0]);
+            } catch (err) { console.error("Error:", err); showError("Gagal memuat data pesanan: " + err.message); }
+        }
+
+        function displayOrder(order) {
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("orderState").style.display = "block";
+            document.getElementById("trackingCodeDisplay").textContent = order.tracking_code;
+            document.getElementById("customerName").textContent = order.customer_name || "-";
+            document.getElementById("serviceType").textContent = order.service_type || "-";
+            if (order.weight) { document.getElementById("weightRow").style.display = "flex"; document.getElementById("weight").textContent = order.weight + " kg"; }
+            if (order.estimated_time) {
+                document.getElementById("estimatedRow").style.display = "flex";
+                const estDate = new Date(order.estimated_time);
+                document.getElementById("estimatedTime").textContent = formatDate(estDate);
+            }
+            document.getElementById("createdAt").textContent = formatDate(new Date(order.created_at));
+            updateStatusStepper(order.status);
+        }
+
+        function updateStatusStepper(status) {
+            const statusOrder = ["Diterima", "Dicuci", "Dikeringkan", "Disetrika", "Siap Diambil"];
+            const currentIndex = statusOrder.indexOf(status);
+            for (let i = 1; i <= 5; i++) {
+                const circle = document.getElementById("step" + i);
+                const label = document.getElementById("label" + i);
+                if (i - 1 <= currentIndex) { circle.classList.add("active"); label.classList.add("active"); }
+                else { circle.classList.remove("active"); label.classList.remove("active"); }
+            }
+            const fillPercentage = ((currentIndex + 1) / statusOrder.length) * 80;
+            document.getElementById("stepLineFill").style.width = fillPercentage + "%";
+        }
+
+        function formatDate(date) {
+            const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+        }
+
+        function showError(message) {
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("errorState").style.display = "block";
+            document.querySelector("#errorState p").textContent = message;
+        }
+
+        // Start the app once DOM is ready
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initSupabase);
+        } else {
+            initSupabase();
+        }
+    </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 import '../../admin/data/repositories/order_repository.dart';
 import '../../../../shared/models/order_model.dart';
 
@@ -15,15 +16,19 @@ class TrackingCubit extends Cubit<TrackingState> {
       return;
     }
     
+    debugPrint('[TRACKING] Fetching order: $trackingCode');
     emit(TrackingLoading());
     try {
       final order = await _orderRepository.fetchOrderByTrackingCode(trackingCode);
+      debugPrint('[TRACKING] Order result: ${order != null ? "Found" : "Not found"}');
       if (order != null) {
         emit(TrackingLoaded(order));
       } else {
         emit(TrackingError('Pesanan dengan kode tersebut tidak ditemukan'));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('[TRACKING] Error: $e');
+      debugPrint('[TRACKING] Stack: $stackTrace');
       emit(TrackingError('Terjadi kesalahan saat mengambil data'));
     }
   }
