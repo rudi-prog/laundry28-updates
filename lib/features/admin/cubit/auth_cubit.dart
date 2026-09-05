@@ -87,24 +87,34 @@ class AuthCubit extends Cubit<AuthState> {
     }
     
     // Cek tipe error spesifik
-    if (str.contains('timeout') && !str.contains('supabase')) 
+    if (str.contains('timeout') && !str.contains('supabase')) {
       return 'TIMEOUT - Koneksi terputus';
-    if (str.contains('connection') || str.contains('connectivity')) 
+    }
+    if (str.contains('connection') || str.contains('connectivity')) {
       return 'NETWORK ERROR - Periksa koneksi internet';
+    }
     
     // SSL/Certificate check — be more specific to avoid false positives
     if (str.contains('certificate') || 
         str.contains('x509') || 
         str.contains('pkix') ||
         str.contains('sslhandshakeexception') ||
-        str.contains('tls handshake')) 
+        str.contains('tls handshake')) {
       return 'SSL CERTIFICATE ERROR - Masalah keamanan koneksi';
+    }
     
-    if (str.contains('401')) return 'UNAUTHORIZED - Email/password salah';
-    if (str.contains('403')) return 'FORBIDDEN - Akses ditolak';
-    if (str.contains('429')) return 'RATE LIMITED - Terlalu banyak percobaan';
-    if (str.contains('500') || str.contains('internal')) 
+    if (str.contains('401')) {
+      return 'UNAUTHORIZED - Email/password salah';
+    }
+    if (str.contains('403')) {
+      return 'FORBIDDEN - Akses ditolak';
+    }
+    if (str.contains('429')) {
+      return 'RATE LIMITED - Terlalu banyak percobaan';
+    }
+    if (str.contains('500') || str.contains('internal')) {
       return 'SERVER ERROR - Masalah dari server';
+    }
     
     return str;
   }

@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+
+import 'package:shimmer/shimmer.dart';
 import '../../../../core/constants/app_routes.dart';
+import '../../../../core/widgets/empty_state_widget.dart';
 import '../../cubit/dashboard_cubit.dart';
 import '../../cubit/auth_cubit.dart';
 import '../widgets/order_card.dart';
+import '../widgets/order_card_skeleton.dart';
 import '../../../../shared/models/order_model.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -29,6 +33,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     'Siap Diambil',
     'Selesai',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch orders on initial load
+    context.read<DashboardCubit>().fetchOrders();
+  }
 
   @override
   void dispose() {
@@ -60,16 +71,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return filtered;
   }
 
+  Future<void> _onRefresh() async {
+    context.read<DashboardCubit>().fetchOrders();
+    // Small delay to show the refresh animation
+    await Future.delayed(const Duration(milliseconds: 600));
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Fetch orders lazily on first load (after auth redirect from login)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<DashboardCubit>();
-      if (cubit.state.isEmpty) {
-        cubit.fetchOrders();
-      }
-    });
-
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
@@ -134,13 +143,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ],
         ),
-        body: BlocBuilder<DashboardCubit, List<OrderModel>>(
-          builder: (context, orders) {
+        body: BlocBuilder<DashboardCubit, DashboardState>(
+          builder: (context, state) {
+            // Determine orders list from current state
+            final List<OrderModel> orders;
+            final bool isLoading = state is DashboardLoading || state is DashboardInitial;
+            final bool isError = state is DashboardError;
+
+            if (state is DashboardLoaded) {
+              orders = state.orders;
+            } else if (state is DashboardLoading) {
+              orders = state.previousOrders;
+            } else if (state is DashboardError) {
+              orders = []; // Show empty/error state, keep previous in state.message
+            } else {
+              orders = [];
+            }
+
             return RefreshIndicator(
-              onRefresh: () async {
-                context.read<DashboardCubit>().fetchOrders();
-                await Future.delayed(const Duration(milliseconds: 300));
-              },
+              onRefresh: _onRefresh,
               color: AppColors.primary,
               child: CustomScrollView(
                 slivers: [
@@ -167,7 +188,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          _buildStatsGrid(orders),
+
+                          // Stats grid - show shimmer during loading
+                          if (isLoading && orders.isEmpty) ..._buildStatsSkeleton(context),
+                          if (!isLoading || orders.isNotEmpty) _buildStatsGrid(orders),
+
                           const SizedBox(height: 20),
 
                           // Search Field
@@ -286,39 +311,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
 
-                  // Filtered order list
-                  _getFilteredOrders(orders).isEmpty && orders.isNotEmpty
-                      ? SliverToBoxAdapter(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.filter_list_off_outlined,
-                                  size: 64,
-                                  color: AppColors.textTertiary,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Tidak ada pesanan yang cocok',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Coba ubah filter atau kata kunci pencarian',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.textTertiary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : SliverList(
+                  // Filtered order list - show skeletons while loading, or actual cards when loaded
+                  if (isLoading) ...[
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: OrderCardSkeleton(count: 5),
+                      ),
+                    ),
+                  ] else if (_getFilteredOrders(orders).isEmpty && orders.isNotEmpty)
+                    SliverToBoxAdapter(
+                      child: EmptyStateWidget(
+                        icon: Icons.filter_list_off_outlined,
+                        title: 'Tidak ada pesanan yang cocok',
+                        subtitle: 'Coba ubah filter atau kata kunci pencarian',
+                      ),
+                    )
+                  else if (orders.isEmpty && !isError)
+                    SliverToBoxAdapter(
+                      child: EmptyStateWidget(
+                        icon: Icons.inbox_outlined,
+                        title: 'Belum ada pesanan',
+                        subtitle: 'Pesanan baru akan muncul di sini',
+                      ),
+                    )
+                  else if (orders.isEmpty && isError)
+                    SliverToBoxAdapter(
+                      child: EmptyStateWidget(
+                        icon: Icons.error_outline,
+                        title: 'Gagal memuat data',
+                        subtitle: 'Periksa koneksi internet Anda dan coba lagi',
+                        actionLabel: 'Coba Lagi',
+                        onAction: () => context.read<DashboardCubit>().fetchOrders(),
+                      ),
+                    )
+                  else
+                    SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               if (index == 0) return const SizedBox(height: 8);
@@ -332,39 +360,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             childCount: _getFilteredOrders(orders).isEmpty ? 0 : _getFilteredOrders(orders).length + 1,
                           ),
                         ),
-
-                  // Empty state when no orders at all
-                  if (orders.isEmpty)
-                    SliverToBoxAdapter(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.inbox_outlined,
-                              size: 80,
-                              color: AppColors.textTertiary,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Belum ada pesanan',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Pesanan baru akan muncul di sini',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textTertiary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
 
                   const SliverToBoxAdapter(child: SizedBox(height: 20)),
                 ],
@@ -464,6 +459,83 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       },
     );
+  }
+
+  List<Widget> _buildStatsSkeleton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return [
+      Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 100,
+              child: Shimmer.fromColors(
+                baseColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                highlightColor: isDark ? Colors.grey.shade600 : Colors.grey.shade100,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SizedBox(
+              height: 100,
+              child: Shimmer.fromColors(
+                baseColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                highlightColor: isDark ? Colors.grey.shade600 : Colors.grey.shade100,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 100,
+              child: Shimmer.fromColors(
+                baseColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                highlightColor: isDark ? Colors.grey.shade600 : Colors.grey.shade100,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SizedBox(
+              height: 100,
+              child: Shimmer.fromColors(
+                baseColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                highlightColor: isDark ? Colors.grey.shade600 : Colors.grey.shade100,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
   }
 
   Widget _buildStatCard({

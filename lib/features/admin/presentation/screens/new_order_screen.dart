@@ -112,8 +112,14 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
           }
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background,
+      child: BlocBuilder<NewOrderCubit, NewOrderState>(
+        builder: (context, state) {
+          final isLoading = state is NewOrderLoading;
+
+          return Stack(
+            children: [
+              Scaffold(
+                backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
@@ -439,6 +445,18 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
             ),
           ),
         ),
+      ),
+              // Loading overlay when saving order
+              if (isLoading)
+                Container(
+                  color: Colors.black.withValues(alpha: 0.4),
+                  child: const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

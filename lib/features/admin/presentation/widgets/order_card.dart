@@ -514,7 +514,7 @@ class _UpdateStatusDialogState extends State<_UpdateStatusDialog> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedStatus,
+            initialValue: _selectedStatus,
             decoration: InputDecoration(
               labelText: 'Pilih Status',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),

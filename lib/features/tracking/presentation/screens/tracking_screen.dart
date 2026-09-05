@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../cubit/tracking_cubit.dart';
 import '../widgets/status_stepper.dart';
+import '../widgets/status_stepper_skeleton.dart';
 
 class TrackingScreen extends StatelessWidget {
   final String trackingCode;
@@ -21,49 +23,104 @@ class TrackingScreen extends StatelessWidget {
         title: const Text('Tracking Pesanan'),
         centerTitle: true,
       ),
-      body: BlocBuilder<TrackingCubit, TrackingState>(
-        builder: (context, state) {
-          if (trackingCode.isEmpty) {
-            return const Center(child: Text('Kode tracking tidak valid'));
+      body: BlocConsumer<TrackingCubit, TrackingState>(
+        listener: (context, state) {
+          if (state is TrackingError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            );
           }
+        },
+        builder: (context, state) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              if (trackingCode.isNotEmpty) {
+                context.read<TrackingCubit>().fetchOrder(trackingCode);
+              }
+            },
+            child: _buildBodyContent(context, state),
+          );
+        },
+      ),
+    );
+  }
 
-          if (state is TrackingLoading) {
+  Widget _buildBodyContent(BuildContext context, TrackingState state) {
+          if (trackingCode.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Mencari pesanan dengan kode: $trackingCode',
-                    style: const TextStyle(color: Color(0xFF757575)),
+                  const Icon(Icons.qr_code_2_outlined, size: 80, color: Color(0xFF757575)),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Kode tracking tidak valid',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF757575)),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Masukkan kode tracking yang benar untuk melacak pesanan Anda',
+                    style: TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
             );
           }
 
+          if (state is TrackingLoading) {
+            return _buildSkeletonLoader(context);
+          }
+
           if (state is TrackingError) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    style: const TextStyle(color: Color(0xFF757575)),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      context.read<TrackingCubit>().fetchOrder(trackingCode);
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Coba Lagi'),
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Pesanan Tidak Ditemukan',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF757575)),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.message,
+                      style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.read<TrackingCubit>().fetchOrder(trackingCode);
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Coba Lagi'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2196F3),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -174,9 +231,6 @@ class TrackingScreen extends StatelessWidget {
           }
 
           return const Center(child: Text('Tidak ada data'));
-        },
-      ),
-    );
   }
 
   Widget _buildInfoRow(IconData icon, String text) {
@@ -230,5 +284,41 @@ class TrackingScreen extends StatelessWidget {
       case 'Selesai': return 'Selesai';
       default: return status;
     }
+  }
+
+  Widget _buildSkeletonLoader(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        // Header skeleton
+        Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          child: Container(
+            width: double.infinity,
+            height: 80,
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Status stepper skeleton
+        const StatusStepperSkeleton(),
+        const SizedBox(height: 24),
+
+        // Details cards skeleton
+        ...List.generate(3, (index) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              width: double.infinity,
+              height: 60,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+            ),
+          );
+        }),
+      ],
+    );
   }
 }
