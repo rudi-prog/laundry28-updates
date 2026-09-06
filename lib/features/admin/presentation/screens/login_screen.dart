@@ -15,9 +15,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   LoginMode _loginMode = LoginMode.owner; // owner atau employee
+  bool _isRegisterMode = false; // mode registrasi untuk owner
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _fullNameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _pinController = TextEditingController();
   bool _obscurePassword = true;
@@ -27,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _fullNameController.dispose();
     _usernameController.dispose();
     _pinController.dispose();
     super.dispose();
@@ -35,10 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       if (_loginMode == LoginMode.owner) {
-        await context.read<AuthCubit>().login(
-              _emailController.text.trim(),
-              _passwordController.text.trim(),
-            );
+        if (_isRegisterMode) {
+          await context.read<AuthCubit>().register(
+                _emailController.text.trim(),
+                _passwordController.text.trim(),
+                _fullNameController.text.trim(),
+              );
+        } else {
+          await context.read<AuthCubit>().login(
+                _emailController.text.trim(),
+                _passwordController.text.trim(),
+              );
+        }
       } else {
         await context.read<AuthCubit>().loginByPin(
               _usernameController.text.trim(),
@@ -51,11 +62,22 @@ class _LoginScreenState extends State<LoginScreen> {
   void _switchLoginMode(LoginMode mode) {
     setState(() {
       _loginMode = mode;
+      _isRegisterMode = false;
     });
     _emailController.clear();
     _passwordController.clear();
+    _fullNameController.clear();
     _usernameController.clear();
     _pinController.clear();
+  }
+
+  void _toggleRegisterMode() {
+    setState(() {
+      _isRegisterMode = !_isRegisterMode;
+    });
+    _emailController.clear();
+    _passwordController.clear();
+    _fullNameController.clear();
   }
 
   void _showMessageDialog(String message) {
@@ -383,10 +405,32 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                           const SizedBox(height: 32),
+                          // Register mode: show full name field
+                          if (_loginMode == LoginMode.owner && _isRegisterMode) ...[
+                            CustomTextField(
+                              labelText: 'NAMA LENGKAP',
+                              controller: _fullNameController,
+                              hintText: 'Masukkan nama lengkap',
+                              prefixIcon: const Icon(Icons.person_outline),
+                              validator: (v) {
+                                if (_isRegisterMode) {
+                                  if (v == null || v.isEmpty) {
+                                    return 'Nama lengkap wajib diisi';
+                                  }
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                          ],
                           BlocBuilder<AuthCubit, AuthState>(
                             builder: (context, state) {
+                              String buttonLabel = 'LOGIN';
+                              if (_loginMode == LoginMode.owner && _isRegisterMode) {
+                                buttonLabel = 'DAFTAR';
+                              }
                               return CustomButton(
-                                label: 'LOGIN',
+                                label: buttonLabel,
                                 onPressed: state is AuthLoading
                                     ? null
                                     : _handleLogin,
@@ -395,8 +439,38 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
+                          // Toggle register/login link for owner
+                          if (_loginMode == LoginMode.owner)
+                            GestureDetector(
+                              onTap: _toggleRegisterMode,
+                              child: Text.rich(
+                                TextSpan(
+                                  text: _isRegisterMode
+                                      ? 'Sudah punya akun? '
+                                      : 'Belum punya akun? ',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xFF757575),
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: _isRegisterMode
+                                          ? 'Login di sini'
+                                          : 'Buat Akun Owner',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF1976D2),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          const SizedBox(height: 8),
                           // Owner mode: show demo credentials
-                          if (_loginMode == LoginMode.owner) ...[
+                          if (_loginMode == LoginMode.owner && !_isRegisterMode) ...[
                             const Padding(
                               padding: EdgeInsets.only(top: 8),
                               child: Text(

@@ -38,14 +38,15 @@ class AuthRoleProvider extends ChangeNotifier {
 /// Global instance untuk refreshListenable
 final AuthRoleProvider authRoleProvider = AuthRoleProvider();
 
-/// Route guard: cek apakah user sudah login via Supabase session
+/// Route guard: cek apakah user sudah login via Supabase session atau AuthRoleProvider
 bool _isAuthenticated() {
   try {
     final session = Supabase.instance.client.auth.currentSession;
-    return session != null;
-  } catch (_) {
-    return false;
-  }
+    if (session != null) return true;
+  } catch (_) {}
+  // Juga cek AuthRoleProvider untuk login PIN (yang tidak membuat Supabase session)
+  if (authRoleProvider.role != null) return true;
+  return false;
 }
 
 /// Get current user's role from staff table
@@ -99,6 +100,7 @@ class AppRoutes {
 
   static final GoRouter router = GoRouter(
     initialLocation: login,
+    refreshListenable: authRoleProvider,
     redirect: (context, state) async {
       final isAuthenticated = _isAuthenticated();
       final isLoginRoute = state.matchedLocation == login;

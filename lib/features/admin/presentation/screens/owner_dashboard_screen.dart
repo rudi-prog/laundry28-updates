@@ -972,10 +972,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
   void _showStaffFormDialog() {
     final isEditing = _editingStaff != null;
     final nc = TextEditingController(text: isEditing ? _editingStaff!.fullName : '');
-    final pc = TextEditingController(text: isEditing ? (_editingStaff!.username ?? '') : '');
-    final ec = TextEditingController(text: isEditing ? _editingStaff!.email : '');
-    final pw = TextEditingController(text: isEditing ? '' : '');
-    final rc = TextEditingController(text: isEditing ? _editingStaff!.role : '');
+    final uc = TextEditingController(text: isEditing ? (_editingStaff!.username ?? '') : '');
+    final pw = TextEditingController(text: isEditing ? (_editingStaff!.pin ?? '') : '');
     final _formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -999,7 +997,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: pc,
+                  controller: uc,
                   decoration: const InputDecoration(
                     labelText: 'Username',
                     prefixIcon: Icon(Icons.person_outline),
@@ -1010,45 +1008,30 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  controller: ec,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Email tidak boleh kosong';
-                    if (!v.contains('@')) return 'Format email tidak valid';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
                   controller: pw,
                   decoration: InputDecoration(
-                    labelText: 'Password${isEditing ? ' (kosongkan jika tidak diubah)' : ''}',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    labelText: isEditing
+                        ? 'PIN (4-6 digit, kosongkan jika tidak diubah)'
+                        : 'PIN (4-6 digit)',
+                    prefixIcon: const Icon(Icons.pin_outlined),
                     border: const OutlineInputBorder(),
+                    hintText: 'Masukkan PIN 4-6 digit',
                   ),
                   obscureText: true,
-                  validator: (v) => (!isEditing && (v == null || v.isEmpty)) ? 'Password harus diisi' : null,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: isEditing ? rc.text : (isEditing ? null : 'karyawan'),
-                  decoration: const InputDecoration(
-                    labelText: 'Role',
-                    prefixIcon: Icon(Icons.badge_outlined),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'karyawan', child: Text('Karyawan')),
-                    DropdownMenuItem(value: 'manajer', child: Text('Manajer')),
-                    DropdownMenuItem(value: 'owner', child: Text('Owner')),
-                  ],
-                  onChanged: (v) => rc.text = v ?? '',
-                  validator: (v) => (v == null || v.isEmpty) ? 'Role harus dipilih' : null,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'PIN harus diisi';
+                    }
+                    if (v.length < 4 || v.length > 6) {
+                      return 'PIN harus 4-6 digit';
+                    }
+                    if (!RegExp(r'^\d+$').hasMatch(v)) {
+                      return 'PIN hanya boleh angka';
+                    }
+                    return null;
+                  },
                 ),
               ],
             ),
@@ -1064,9 +1047,14 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
               if (_formKey.currentState!.validate()) {
                 Navigator.pop(context);
                 if (isEditing) {
-                  await _updateStaff(_editingStaff!.id ?? 0, nc.text, pc.text, ec.text, pw.text, rc.text);
+                  await _updateStaff(
+                    _editingStaff!.id ?? 0,
+                    nc.text,
+                    uc.text,
+                    pw.text,
+                  );
                 } else {
-                  await _createStaff(nc.text, pc.text, ec.text, pw.text, rc.text);
+                  await _createStaff(nc.text, uc.text, pw.text);
                 }
               }
             },
@@ -1080,9 +1068,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
   Future<void> _createStaff(
     String fullName,
     String username,
-    String email,
-    String password,
-    String role,
+    String pin,
   ) async {
     setState(() => _isStaffLoading = true);
     try {
@@ -1090,9 +1076,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
       await repository.createStaff(
         fullName: fullName,
         username: username,
-        email: email,
-        password: password,
-        role: role,
+        pin: pin,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1117,9 +1101,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
     int id,
     String fullName,
     String username,
-    String email,
-    String password,
-    String role,
+    String pin,
   ) async {
     setState(() => _isStaffLoading = true);
     try {
@@ -1128,8 +1110,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
         id: id,
         fullName: fullName,
         username: username,
-        email: email,
-        role: role,
+        pin: pin,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

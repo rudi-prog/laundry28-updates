@@ -253,43 +253,58 @@ class AuthRepository {
 
   /// Create a new staff member
   Future<StaffModel> createStaff({
-    required String email,
     required String fullName,
     String? username,
-    String role = 'employee',
-    String password = 'admin123',
+    String? pin,
   }) async {
     try {
-      print('➕ Creating new staff: $fullName ($email)');
+      print('➕ Creating new staff: $fullName');
+
+      // Check if username already exists in staff table
+      final normalizedUsername = username?.trim().toLowerCase();
+      final existingStaff = await _client
+          .from('staff')
+          .select('id')
+          .eq('username', normalizedUsername!)
+          .limit(1);
+
+      if (existingStaff.isNotEmpty) {
+        throw Exception('Username sudah digunakan: $username');
+      }
+
+      // Generate a unique email for Supabase Auth using timestamp
+      final uniqueId = DateTime.now().millisecondsSinceEpoch;
+      final authEmail = '${username?.trim().toLowerCase() ?? ''}_${uniqueId}@staff.local';
 
       // First, create the user in Supabase Auth
       final response = await _client.auth.signUp(
-        email: email.trim().toLowerCase(),
-        password: password,
+        email: authEmail,
+        password: pin ?? '123456',
       );
 
       if (response.user == null) {
         throw Exception('Failed to create auth user');
       }
 
-      // Then, insert staff record
+      // Then, insert staff record (no email column for staff)
       await _client.from('staff').insert({
-        'email': email.trim().toLowerCase(),
         'full_name': fullName.trim(),
         'username': username?.trim().toLowerCase(),
-        'role': role,
+        'pin': pin,
+        'role': 'employee',
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      print('✅ Staff created successfully: $fullName');
+      print('✅ Staff created successfully: $fullName (username: ${username?.trim().toLowerCase()}, pin: $pin)');
 
       // Return the created staff model
       return StaffModel(
         id: response.user!.id.hashCode, // Use user ID hash as placeholder
-        email: email.trim().toLowerCase(),
+        email: '',
         username: username?.trim().toLowerCase(),
+        pin: pin,
         fullName: fullName.trim(),
-        role: role,
+        role: 'employee',
         createdAt: DateTime.now(),
       );
     } catch (e, stackTrace) {
@@ -302,19 +317,17 @@ class AuthRepository {
   /// Update an existing staff member
   Future<StaffModel> updateStaff({
     required int id,
-    String? email,
     String? fullName,
     String? username,
-    String? role,
+    String? pin,
   }) async {
     try {
       print('✏️ Updating staff #$id');
 
       final updateData = <String, dynamic>{};
-      if (email != null) updateData['email'] = email.trim().toLowerCase();
       if (fullName != null) updateData['full_name'] = fullName.trim();
       if (username != null) updateData['username'] = username.trim().toLowerCase();
-      if (role != null) updateData['role'] = role;
+      if (pin != null) updateData['pin'] = pin;
 
       final response = await _client
           .from('staff')
