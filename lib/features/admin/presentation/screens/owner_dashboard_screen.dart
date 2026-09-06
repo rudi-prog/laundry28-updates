@@ -9,6 +9,7 @@ import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../cubit/auth_cubit.dart';
 import '../../cubit/dashboard_cubit.dart';
+import '../../cubit/laundry_cubit.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../data/models/staff_model.dart';
 import '../widgets/order_card.dart';
@@ -48,8 +49,25 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    context.read<DashboardCubit>().fetchOrders();
+    _loadOrders();
     _fetchStaffList();
+  }
+
+  void _loadOrders() {
+    final laundryCubit = context.read<LaundryCubit>();
+    final state = laundryCubit.state;
+    if (state is LaundryUnconfigured) {
+      // Redirect to setup laundry page
+      if (mounted) {
+        context.go(AppRoutes.setupLaundry);
+      }
+      return;
+    }
+    if (state is LaundryLoaded) {
+      context.read<DashboardCubit>().fetchOrders(laundryId: state.laundry.id);
+    } else {
+      context.read<DashboardCubit>().fetchOrders();
+    }
   }
 
   @override
@@ -78,10 +96,25 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
   }
 
   Future<void> _onRefresh() async {
-    await Future.wait([
-      context.read<DashboardCubit>().fetchOrders(),
-      _fetchStaffList(),
-    ]);
+    final laundryCubit = context.read<LaundryCubit>();
+    final state = laundryCubit.state;
+    if (state is LaundryUnconfigured) {
+      if (mounted) {
+        Navigator.of(context).pushNamed('/setup-laundry');
+      }
+      return;
+    }
+    if (state is LaundryLoaded) {
+      await Future.wait([
+        context.read<DashboardCubit>().fetchOrders(laundryId: state.laundry.id),
+        _fetchStaffList(),
+      ]);
+    } else {
+      await Future.wait([
+        context.read<DashboardCubit>().fetchOrders(),
+        _fetchStaffList(),
+      ]);
+    }
     await Future.delayed(const Duration(milliseconds: 600));
   }
 
@@ -122,18 +155,41 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
           context.go('/login');
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
+      child: BlocListener<LaundryCubit, LaundryState>(
+        listener: (context, state) {
+          if (state is LaundryUnconfigured && context.mounted) {
+            print('🔀 [DASHBOARD] Laundry belum disetup, redirect ke setup');
+            context.go(AppRoutes.setupLaundry);
+          } else if (state is LaundryLoaded) {
+            // Re-load orders when laundry becomes available (e.g. after setup)
+            print('🔄 [DASHBOARD] Laundry loaded, re-fetching orders for: ${state.laundry.id}');
+            context.read<DashboardCubit>().fetchOrders(laundryId: state.laundry.id);
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          title: const Text(
-            'Dashboard Owner',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
+          title: BlocBuilder<LaundryCubit, LaundryState>(
+            builder: (context, laundryState) {
+              String laundryTitle = 'Dashboard Owner';
+              if (laundryState is LaundryLoaded) {
+                laundryTitle = 'Dashboard Owner - ${laundryState.laundry.name}';
+              } else if (laundryState is LaundryLoading) {
+                laundryTitle = 'Dashboard Owner';
+              } else if (laundryState is LaundryUnconfigured) {
+                laundryTitle = 'Dashboard Owner (Laundry Belum Disetup)';
+              }
+              return Text(
+                laundryTitle,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              );
+            },
           ),
           elevation: 0,
           bottom: TabBar(
@@ -202,7 +258,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
               )
             : null,
       ),
-    );
+    ),
+  );
   }
 
   // ==================== ANALYTICS TAB ====================

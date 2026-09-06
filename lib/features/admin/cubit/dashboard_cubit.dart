@@ -9,20 +9,25 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   final OrderRepository _orderRepository = OrderRepository();
 
-  Future<void> fetchOrders() async {
+  Future<void> fetchOrders({int? laundryId}) async {
     try {
       emit(DashboardLoading(state.orders ?? []));
-      final orders = await _orderRepository.fetchOrders();
-      emit(DashboardLoaded(orders, state.orders ?? []));
+      final orders = await _orderRepository.fetchOrders(laundryId: laundryId);
+      if (orders.isEmpty) {
+        emit(DashboardEmpty(state.orders ?? []));
+      } else {
+        emit(DashboardLoaded(orders, state.orders ?? []));
+      }
     } catch (e) {
+      print('❌ [DASHBOARD] Error fetching orders: $e');
       emit(DashboardError('Gagal memuat pesanan', state.orders ?? []));
     }
   }
 
-  Future<void> updateOrderStatus(int orderId, String newStatus) async {
+  Future<void> updateOrderStatus(int orderId, String newStatus, {int? laundryId}) async {
     try {
       await _orderRepository.updateOrderStatus(orderId, newStatus);
-      await fetchOrders();
+      await fetchOrders(laundryId: laundryId);
     } catch (e) {
       rethrow;
     }

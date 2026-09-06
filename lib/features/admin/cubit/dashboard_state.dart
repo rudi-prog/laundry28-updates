@@ -21,3 +21,7 @@ class DashboardError extends DashboardState {
   final String message;
   DashboardError(this.message, List<OrderModel> previousOrders) : super(orders: previousOrders);
 }
+
+class DashboardEmpty extends DashboardState {
+  DashboardEmpty(List<OrderModel> previousOrders) : super(orders: previousOrders);
+}

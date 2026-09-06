@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../shared/models/order_model.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../features/admin/cubit/dashboard_cubit.dart';
+import '../../../../features/admin/cubit/laundry_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/config/web_tracking_config.dart';
 import 'package:flutter/services.dart';
@@ -464,7 +465,16 @@ class _UpdateStatusDialogState extends State<_UpdateStatusDialog> {
     }
     setState(() => _isUpdating = true);
     try {
-      await context.read<DashboardCubit>().updateOrderStatus(widget.order.id!, _selectedStatus!);
+      // Get current laundryId from LaundryCubit
+      final laundryCubit = context.read<LaundryCubit>();
+      final laundryState = laundryCubit.state;
+      final laundryId = laundryState is LaundryLoaded ? laundryState.laundry.id : null;
+
+      await context.read<DashboardCubit>().updateOrderStatus(
+        widget.order.id!,
+        _selectedStatus!,
+        laundryId: laundryId,
+      );
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(

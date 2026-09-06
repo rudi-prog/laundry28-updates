@@ -6,6 +6,8 @@ class StaffModel {
   final String? pin;            // PIN 4-6 digit (untuk employee login)
   final String fullName;
   final String role;            // 'owner' atau 'employee'
+  final int? laundryId;         // Laundry/tenant ID
+  final String? laundryName;    // Nama laundry (jika ada)
   final DateTime createdAt;
 
   StaffModel({
@@ -15,6 +17,8 @@ class StaffModel {
     this.pin,
     required this.fullName,
     this.role = 'employee',
+    this.laundryId,
+    this.laundryName,
     required this.createdAt,
   });
 
@@ -26,6 +30,8 @@ class StaffModel {
       pin: json['pin'] as String?,
       fullName: json['full_name'] as String? ?? '',
       role: json['role'] as String? ?? 'employee',
+      laundryId: json['laundry_id'] as int?,
+      laundryName: json['laundry_name'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -40,6 +46,8 @@ class StaffModel {
       'pin': pin,
       'full_name': fullName,
       'role': role,
+      'laundry_id': laundryId,
+      'laundry_name': laundryName,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -51,6 +59,8 @@ class StaffModel {
     String? pin,
     String? fullName,
     String? role,
+    int? laundryId,
+    String? laundryName,
     DateTime? createdAt,
   }) {
     return StaffModel(
@@ -60,6 +70,8 @@ class StaffModel {
       pin: pin ?? this.pin,
       fullName: fullName ?? this.fullName,
       role: role ?? this.role,
+      laundryId: laundryId ?? this.laundryId,
+      laundryName: laundryName ?? this.laundryName,
       createdAt: createdAt ?? this.createdAt,
     );
   }

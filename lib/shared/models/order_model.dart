@@ -11,6 +11,7 @@ class OrderModel {
   final DateTime? updatedAt;
   final double? weight;
   final double? totalPrice;
+  final int? laundryId;
 
   OrderModel({
     this.id,
@@ -24,6 +25,7 @@ class OrderModel {
     this.updatedAt,
     this.weight,
     this.totalPrice,
+    this.laundryId,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class OrderModel {
           : (json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : null),
       weight: json['weight'] != null ? (json['weight'] as num).toDouble() : null,
       totalPrice: json['total_price'] != null ? (json['total_price'] as num).toDouble() : (json['totalPrice'] != null ? (json['totalPrice'] as num).toDouble() : null),
+      laundryId: json['laundry_id'] as int?,
     );
   }
 
@@ -62,6 +65,7 @@ class OrderModel {
       'updated_at': updatedAt?.toIso8601String(),
       'weight': weight,
       'total_price': totalPrice,
+      'laundry_id': laundryId,
     };
   }
 
@@ -77,6 +81,7 @@ class OrderModel {
     DateTime? updatedAt,
     double? weight,
     double? totalPrice,
+    int? laundryId,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -90,6 +95,7 @@ class OrderModel {
       updatedAt: updatedAt ?? this.updatedAt,
       weight: weight ?? this.weight,
       totalPrice: totalPrice ?? this.totalPrice,
+      laundryId: laundryId ?? this.laundryId,
     );
   }
 }

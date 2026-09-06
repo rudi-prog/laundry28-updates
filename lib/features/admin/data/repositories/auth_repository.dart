@@ -23,7 +23,7 @@ class AuthRepository {
           print('✅ Auth successful, fetching staff data...');
           final staffResponse = await _client
               .from('staff')
-              .select()
+              .select('*')
               .eq('email', email.trim().toLowerCase())
               .limit(1);
 
@@ -74,31 +74,13 @@ class AuthRepository {
   Future<StaffModel?> loginByUsername(String username, String password) async {
     try {
       print('🔵 Attempting employee login for: $username');
-      
-      // 1. Cari staff berdasarkan username di tabel staff
-      final staffResponse = await _client
-          .from('staff')
-          .select()
-          .eq('username', username.trim().toLowerCase())
-          .limit(1);
 
-      if (staffResponse.isEmpty) {
-        print('❌ Employee not found: $username');
-        return null;
-      }
-
-      final staffData = staffResponse.first as Map<String, dynamic>;
-      final staffEmail = staffData['email'] as String?;
-      
-      if (staffEmail == null || staffEmail.isEmpty) {
-        print('❌ No email found for username: $username');
-        return null;
-      }
-
-      // 2. Login menggunakan Supabase Auth dengan email dari record staff
-      print('🔵 Authenticating as: $staffEmail');
+      // STEP 1: Login ke Supabase Auth DULUAN agar RLS bisa akses tabel staff
+      // Email pattern: username@laundry28.local (sama seperti createStaff)
+      final authEmail = '${username.trim().toLowerCase()}@laundry28.local';
+      print('🔵 Authenticating as: $authEmail');
       final authResponse = await _client.auth.signInWithPassword(
-        email: staffEmail,
+        email: authEmail,
         password: password,
       );
 
@@ -107,7 +89,21 @@ class AuthRepository {
         return null;
       }
 
-      // 3. Return staff model dengan role info
+      print('✅ Auth successful, fetching staff data...');
+
+      // STEP 2: Sekarang user sudah authenticated, query tabel staff
+      final staffResponse = await _client
+          .from('staff')
+          .select('*')
+          .eq('username', username.trim().toLowerCase())
+          .limit(1);
+
+      if (staffResponse.isEmpty) {
+        print('❌ Employee not found in staff table: $username');
+        return null;
+      }
+
+      final staffData = staffResponse.first as Map<String, dynamic>;
       final staff = StaffModel.fromJson(staffData);
       print('✅ Employee login successful: ${staff.fullName} (role: ${staff.role})');
       return staff;
@@ -119,35 +115,51 @@ class AuthRepository {
   }
 
   /// Login Employee dengan PIN (username + 4-6 digit PIN)
-  /// Metode ini TIDAK menggunakan Supabase Auth, langsung cek dari tabel staff
+  /// FIX: Login ke Supabase Auth DULUAN agar RLS bisa akses tabel staff
   Future<StaffModel?> loginByPin(String username, String pin) async {
     try {
-      print('🔵 Attempting PIN login for: $username');
+      print('🔵 [LOGIN_BY_PIN] Attempting: $username');
 
-      // 1. Cari staff berdasarkan username di tabel staff
+      // STEP 1: Generate auth email pattern (sama seperti saat createStaff)
+      final authEmail = '${username.trim().toLowerCase()}@laundry28.local';
+
+      // STEP 2: Login ke Supabase Auth DULUAN agar user authenticated
+      print('🔵 Attempting auth login for: $authEmail');
+      final authResponse = await _client.auth.signInWithPassword(
+        email: authEmail,
+        password: pin,
+      );
+
+      if (authResponse.user == null) {
+        print('❌ Auth failed for: $authEmail (user mungkin belum terdaftar)');
+        return null;
+      }
+
+      print('✅ Auth successful, fetching staff data...');
+
+      // STEP 3: Sekarang user sudah authenticated, query tabel staff
       final staffResponse = await _client
           .from('staff')
-          .select()
+          .select('*')
           .eq('username', username.trim().toLowerCase())
           .limit(1);
 
       if (staffResponse.isEmpty) {
-        print('❌ Employee not found: $username');
+        print('❌ Employee not found in staff table: $username');
         return null;
       }
 
       final staffData = staffResponse.first as Map<String, dynamic>;
       final staff = StaffModel.fromJson(staffData);
 
-      // 2. Cek apakah employee punya PIN
+      // STEP 4: Verifikasi PIN cocok
       if (staff.pin == null || staff.pin!.isEmpty) {
         print('⚠️ No PIN set for employee: $username');
         return null;
       }
 
-      // 3. Validasi PIN (case-insensitive, trim whitespace)
       if (staff.pin!.trim() == pin.trim()) {
-        print('✅ PIN login successful: ${staff.fullName} (role: ${staff.role})');
+        print('✅ [LOGIN_BY_PIN] Auth successful for: ${staff.fullName} (role: ${staff.role})');
         return staff;
       } else {
         print('❌ PIN mismatch for: $username');
@@ -159,6 +171,7 @@ class AuthRepository {
       rethrow;
     }
   }
+
 
   /// Register user baru (Owner)
   /// Default role adalah 'owner' karena registrasi dari login screen adalah pemilik bisnis
@@ -235,7 +248,7 @@ class AuthRepository {
       print('📋 Fetching staff list...');
       final response = await _client
           .from('staff')
-          .select()
+          .select('*')
           .order('created_at', ascending: false);
 
       final staffList = (response as List)
@@ -272,9 +285,7 @@ class AuthRepository {
         throw Exception('Username sudah digunakan: $username');
       }
 
-      // Generate a unique email for Supabase Auth using timestamp
-      final uniqueId = DateTime.now().millisecondsSinceEpoch;
-      final authEmail = '${username?.trim().toLowerCase() ?? ''}_${uniqueId}@staff.local';
+      final authEmail = '${username?.trim().toLowerCase()}@laundry28.local';
 
       // First, create the user in Supabase Auth
       final response = await _client.auth.signUp(

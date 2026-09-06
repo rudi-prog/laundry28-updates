@@ -6,6 +6,7 @@ import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../cubit/new_order_cubit.dart';
 import '../../cubit/dashboard_cubit.dart';
+import '../../cubit/laundry_cubit.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class NewOrderScreen extends StatefulWidget {
@@ -56,12 +57,18 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
 
     final weight = double.tryParse(_weightController.text) ?? 1.0;
 
+    // Get current laundryId from LaundryCubit
+    final laundryCubit = context.read<LaundryCubit>();
+    final laundryState = laundryCubit.state;
+    final laundryId = laundryState is LaundryLoaded ? laundryState.laundry.id : null;
+
     await context.read<NewOrderCubit>().saveOrder(
           customerName: _customerNameController.text,
           customerPhone: _customerPhoneController.text,
           serviceType: _selectedService,
           weight: weight,
           estimatedTime: estimatedDateTime,
+          laundryId: laundryId,
         );
   }
 

@@ -15,6 +15,7 @@ class NewOrderCubit extends Cubit<NewOrderState> {
     required String serviceType,
     required double weight,
     DateTime? estimatedTime,
+    int? laundryId,
   }) async {
     emit(NewOrderLoading());
     try {
@@ -28,8 +29,9 @@ class NewOrderCubit extends Cubit<NewOrderState> {
         weight: weight,
         totalPrice: _calculatePrice(serviceType, weight),
         estimatedTime: estimatedTime,
+        laundryId: laundryId,
       );
-      await _orderRepository.createOrder(order);
+      await _orderRepository.createOrder(order, laundryId: laundryId);
       emit(NewOrderSuccess());
     } catch (e) {
       String errorMsg = 'Gagal membuat pesanan';

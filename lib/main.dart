@@ -6,6 +6,7 @@ import 'core/theme/app_theme.dart';
 import 'core/constants/app_routes.dart';
 import 'features/admin/cubit/auth_cubit.dart';
 import 'features/admin/cubit/dashboard_cubit.dart';
+import 'features/admin/cubit/laundry_cubit.dart';
 import 'features/admin/cubit/new_order_cubit.dart';
 import 'features/tracking/cubit/tracking_cubit.dart';
 
@@ -22,16 +23,22 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => AuthCubit()),
+        BlocProvider(create: (_) => LaundryCubit()),
         BlocProvider(create: (_) => DashboardCubit()), // Orders fetched lazily on dashboard screen load (after auth)
         BlocProvider(create: (_) => NewOrderCubit()),
         BlocProvider(create: (_) => TrackingCubit()),
       ],
       child: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
-          // Update global role saat auth state berubah
           if (state is Authenticated) {
             AuthRoleProvider.setCurrentUserRole(state.staff.role);
             print('🔄 [ROUTE] User role updated: ${state.staff.role} (${state.staff.fullName})');
+            // Fetch laundry data for this owner
+            final userId = SupabaseService.client.auth.currentUser?.id;
+            if (userId != null) {
+              context.read<LaundryCubit>().fetchActiveLaundry(userId);
+              print('📦 [LAUNDRY] Fetch initiated for owner: $userId');
+            }
           } else if (state is AuthUnauthenticated || state is AuthInitial) {
             AuthRoleProvider.setCurrentUserRole(null);
             print('🔄 [ROUTE] User role cleared');

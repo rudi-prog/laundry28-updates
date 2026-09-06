@@ -70,6 +70,7 @@ class AuthCubit extends Cubit<AuthState> {
       if (staff != null) {
         print('✅ [LOGIN_BY_PIN] Auth successful for: ${staff.fullName} (role: ${staff.role})');
         emit(Authenticated(staff));
+        
       } else {
         print('❌ [LOGIN_BY_PIN] Invalid credentials for: $username');
         emit(AuthUnauthenticated(

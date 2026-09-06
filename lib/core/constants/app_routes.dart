@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/admin/presentation/screens/login_screen.dart';
 import '../../features/admin/presentation/screens/owner_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/employee_dashboard_screen.dart';
+import '../../features/admin/presentation/screens/setup_laundry_screen.dart';
 import '../../features/admin/presentation/screens/new_order_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
 import '../../features/admin/cubit/auth_cubit.dart';
@@ -73,7 +74,7 @@ Future<String?> _getUserRole() async {
 }
 
 /// Get the appropriate dashboard route based on user role
-String _getDashboardRoute() {
+String? _getDashboardRoute() {
   // Prioritas: gunakan role dari AuthRoleProvider (sync dari AuthCubit)
   final role = authRoleProvider.role;
   
@@ -85,9 +86,9 @@ String _getDashboardRoute() {
     return AppRoutes.employeeDashboard;
   }
   
-  // Fallback: redirect ke login jika role belum di-set
-  print('⚠️ [ROUTE] Role belum di-set, redirect ke login');
-  return AppRoutes.login;
+  // Role belum di-set → return null (no redirect), biarkan user stay di halaman saat ini
+  print('⚠️ [ROUTE] Role belum di-set, tidak redirect');
+  return null;
 }
 
 class AppRoutes {
@@ -97,6 +98,7 @@ class AppRoutes {
   static const String employeeDashboard = '/employee/dashboard';
   static const String tracking = '/tracking';
   static const String newOrder = '/new-order';
+  static const String setupLaundry = '/setup-laundry';
 
   static final GoRouter router = GoRouter(
     initialLocation: login,
@@ -117,15 +119,23 @@ class AppRoutes {
       // Jika sudah login dan masih di halaman login → redirect ke dashboard sesuai role
       if (isAuthenticated && isLoginRoute) {
         final route = await _getDashboardRoute();
-        print('🔀 [REDIRECT] Authenticated, redirecting to: $route');
-        return route;
+        if (route != null) {
+          print('🔀 [REDIRECT] Authenticated, redirecting to: $route');
+          return route;
+        }
+        print('⚠️ [REDIRECT] Role belum di-set, tetap di login');
+        return null;
       }
 
       // Jika akses ke /dashboard (general route), redirect ke role-specific dashboard
       if (isAuthenticated && state.matchedLocation == dashboard) {
         final route = await _getDashboardRoute();
-        print('🔀 [REDIRECT] General dashboard, redirecting to: $route');
-        return route;
+        if (route != null) {
+          print('🔀 [REDIRECT] General dashboard, redirecting to: $route');
+          return route;
+        }
+        print('⚠️ [REDIRECT] Role belum di-set, tetap di dashboard umum');
+        return null;
       }
 
       return null;
@@ -150,6 +160,11 @@ class AppRoutes {
         name: 'new-order',
         path: newOrder,
         builder: (context, state) => const NewOrderScreen(),
+      ),
+      GoRoute(
+        name: 'setup-laundry',
+        path: '/setup-laundry',
+        builder: (context, state) => const SetupLaundryScreen(),
       ),
       GoRoute(
         name: 'tracking',

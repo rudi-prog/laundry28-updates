@@ -8,6 +8,7 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../cubit/dashboard_cubit.dart';
 import '../../cubit/auth_cubit.dart';
+import '../../cubit/laundry_cubit.dart';
 import '../widgets/order_card.dart';
 import '../widgets/order_card_skeleton.dart';
 import '../../../../shared/models/order_model.dart';
@@ -38,7 +39,17 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
   void initState() {
     super.initState();
     // Fetch orders on initial load
-    context.read<DashboardCubit>().fetchOrders();
+    _loadOrders();
+  }
+
+  void _loadOrders() {
+    final laundryCubit = context.read<LaundryCubit>();
+    final state = laundryCubit.state;
+    if (state is LaundryLoaded) {
+      context.read<DashboardCubit>().fetchOrders(laundryId: state.laundry.id);
+    } else {
+      context.read<DashboardCubit>().fetchOrders();
+    }
   }
 
   @override
@@ -72,7 +83,7 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
   }
 
   Future<void> _onRefresh() async {
-    context.read<DashboardCubit>().fetchOrders();
+    _loadOrders();
     // Small delay to show the refresh animation
     await Future.delayed(const Duration(milliseconds: 600));
   }
@@ -90,20 +101,32 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
             appBar: AppBar(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
-              title: const Text(
-                'Dashboard Karyawan',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
+              title: BlocBuilder<LaundryCubit, LaundryState>(
+                builder: (context, laundryState) {
+                  String title = 'Dashboard Karyawan';
+                  if (laundryState is LaundryLoaded) {
+                    title = 'Dashboard Karyawan - ${laundryState.laundry.name}';
+                  } else if (laundryState is LaundryLoading) {
+                    title = 'Dashboard Karyawan';
+                  } else if (laundryState is LaundryUnconfigured) {
+                    title = 'Dashboard Karyawan (Laundry Belum Disetup)';
+                  }
+                  return Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  );
+                },
               ),
               elevation: 0,
               actions: [
                 IconButton(
                   icon: const Icon(Icons.refresh),
                   onPressed: () {
-                    context.read<DashboardCubit>().fetchOrders();
+                    _loadOrders();
                   },
                 ),
                 PopupMenuButton<MenuChoice>(
