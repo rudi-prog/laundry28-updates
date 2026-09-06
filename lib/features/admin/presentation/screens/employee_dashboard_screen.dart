@@ -13,14 +13,14 @@ import '../widgets/order_card_skeleton.dart';
 import '../../../../shared/models/order_model.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+class EmployeeDashboardScreen extends StatefulWidget {
+  const EmployeeDashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
+  State<EmployeeDashboardScreen> createState() => _EmployeeDashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
   String _selectedStatus = 'Semua';
   final TextEditingController _searchController = TextEditingController();
 
@@ -91,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               title: const Text(
-                'Dashboard Admin',
+                'Dashboard Karyawan',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

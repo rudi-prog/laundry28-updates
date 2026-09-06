@@ -35,6 +35,58 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  /// Login Employee dengan username & password
+  Future<void> loginByUsername(String username, String password) async {
+    emit(AuthLoading());
+    try {
+      print('🔵 [LOGIN_BY_USERNAME] Attempting: $username');
+      final staff = await _authRepository.loginByUsername(username, password);
+      if (staff != null) {
+        print('✅ [LOGIN_BY_USERNAME] Auth successful for: ${staff.fullName} (role: ${staff.role})');
+        emit(Authenticated(staff));
+      } else {
+        print('❌ [LOGIN_BY_USERNAME] Invalid credentials for: $username');
+        emit(AuthUnauthenticated(
+            message: 'Username atau password salah'));
+      }
+    } catch (e, stackTrace) {
+      final errorDetails = _formatError(e);
+      print('🔴 [LOGIN_BY_USERNAME] ERROR: ${errorDetails}');
+      print('📍 STACK TRACE:\n$stackTrace');
+      
+      emit(AuthUnauthenticated(
+          message: 'Login gagal!\n\n'
+              'Tipe: ${e.runtimeType}\n'
+              'Pesan: ${e.toString().replaceAll('\n', ' ').replaceAll('Exception: ', '')}'));
+    }
+  }
+
+  /// Login Employee dengan username & PIN
+  Future<void> loginByPin(String username, String pin) async {
+    emit(AuthLoading());
+    try {
+      print('🔵 [LOGIN_BY_PIN] Attempting: $username');
+      final staff = await _authRepository.loginByPin(username, pin);
+      if (staff != null) {
+        print('✅ [LOGIN_BY_PIN] Auth successful for: ${staff.fullName} (role: ${staff.role})');
+        emit(Authenticated(staff));
+      } else {
+        print('❌ [LOGIN_BY_PIN] Invalid credentials for: $username');
+        emit(AuthUnauthenticated(
+            message: 'Username atau PIN salah'));
+      }
+    } catch (e, stackTrace) {
+      final errorDetails = _formatError(e);
+      print('🔴 [LOGIN_BY_PIN] ERROR: ${errorDetails}');
+      print('📍 STACK TRACE:\n$stackTrace');
+      
+      emit(AuthUnauthenticated(
+          message: 'Login gagal!\n\n'
+              'Tipe: ${e.runtimeType}\n'
+              'Pesan: ${e.toString().replaceAll('\n', ' ').replaceAll('Exception: ', '')}'));
+    }
+  }
+
   /// Register user baru
   Future<void> register(String email, String password, String fullName) async {
     emit(AuthLoading());

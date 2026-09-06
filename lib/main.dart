@@ -26,11 +26,23 @@ void main() async {
         BlocProvider(create: (_) => NewOrderCubit()),
         BlocProvider(create: (_) => TrackingCubit()),
       ],
-      child: MaterialApp.router(
-        title: 'Laundry28',
-        theme: AppTheme.lightTheme,
-        routerConfig: AppRoutes.router,
-        debugShowCheckedModeBanner: false,
+      child: BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          // Update global role saat auth state berubah
+          if (state is Authenticated) {
+            AuthRoleProvider.setCurrentUserRole(state.staff.role);
+            print('🔄 [ROUTE] User role updated: ${state.staff.role} (${state.staff.fullName})');
+          } else if (state is AuthUnauthenticated || state is AuthInitial) {
+            AuthRoleProvider.setCurrentUserRole(null);
+            print('🔄 [ROUTE] User role cleared');
+          }
+        },
+        child: MaterialApp.router(
+          title: 'Laundry28',
+          theme: AppTheme.lightTheme,
+          routerConfig: AppRoutes.router,
+          debugShowCheckedModeBanner: false,
+        ),
       ),
     ),
   );
