@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:app_links/app_links.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'core/supabase/supabase_client.dart';
 import 'core/theme/app_theme.dart';
@@ -19,6 +21,46 @@ void main() async {
   // Initialize locale data for Indonesian date formatting
   await initializeDateFormatting('id_ID', null);
 
+  // Handle deep links for OAuth callback on mobile
+  final appLinks = AppLinks();
+
+  // Handle deep link if app is opened from cold start (not running)
+  try {
+    final initialLink = await appLinks.getInitialLink();
+    if (initialLink != null) {
+      AppRoutes.deeplinkUri = initialLink;
+      if (kDebugMode) {
+        print('🔗 [DEEP_LINK] Initial link: $initialLink');
+      }
+      if (initialLink.path == '/oauth/callback') {
+        // Navigate to OAuth callback screen via GoRouter
+        AppRoutes.router.push(AppRoutes.oauthCallback);
+      }
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('⚠️ [DEEP_LINK] Failed to get initial link: $e');
+    }
+  }
+
+  // Listen for deep links when app is in warm start (running in background)
+  appLinks.uriLinkStream.listen((Uri? uri) {
+    if (uri != null) {
+      AppRoutes.deeplinkUri = uri;
+      if (kDebugMode) {
+        print('🔗 [DEEP_LINK] Incoming link: $uri');
+      }
+      if (uri.path == '/oauth/callback') {
+        // Navigate to OAuth callback screen via GoRouter
+        AppRoutes.router.push(AppRoutes.oauthCallback);
+      }
+    }
+  }).onError((error) {
+    if (kDebugMode) {
+      print('⚠️ [DEEP_LINK] Stream error: $error');
+    }
+  });
+
   runApp(
     MultiBlocProvider(
       providers: [
@@ -32,16 +74,22 @@ void main() async {
         listener: (context, state) {
           if (state is Authenticated) {
             AuthRoleProvider.setCurrentUserRole(state.staff.role);
-            print('🔄 [ROUTE] User role updated: ${state.staff.role} (${state.staff.fullName})');
+            if (kDebugMode) {
+              print('🔄 [ROUTE] User role updated: ${state.staff.role} (${state.staff.fullName})');
+            }
             // Fetch laundry data for this owner
             final userId = SupabaseService.client.auth.currentUser?.id;
             if (userId != null) {
               context.read<LaundryCubit>().fetchActiveLaundry(userId);
-              print('📦 [LAUNDRY] Fetch initiated for owner: $userId');
+              if (kDebugMode) {
+                print('📦 [LAUNDRY] Fetch initiated for owner: $userId');
+              }
             }
           } else if (state is AuthUnauthenticated || state is AuthInitial) {
             AuthRoleProvider.setCurrentUserRole(null);
-            print('🔄 [ROUTE] User role cleared');
+            if (kDebugMode) {
+              print('🔄 [ROUTE] User role cleared');
+            }
           }
         },
         child: MaterialApp.router(

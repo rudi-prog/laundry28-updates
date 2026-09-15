@@ -80,7 +80,7 @@ class OrderCardSkeleton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
       baseColor: isDark ? Colors.grey.shade700! : Colors.grey.shade300!,
-      highlightColor: isDark ? Colors.grey.shade600! : Colors.grey.shade100!,
+      highlightColor: isDark ? Colors.grey.shade600! : Colors.grey.shade100,
       child: Container(
         width: width,
         height: height,

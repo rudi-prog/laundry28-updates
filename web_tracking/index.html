@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laundry28 - Tracking Pesanan</title>
+    <title>Laundry28 - Tracking Cucian</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -349,6 +349,39 @@
         }
         .error-btn:active { transform: scale(0.96); }
 
+        /* ===== READY TO PICKUP BANNER ===== */
+        .ready-banner {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            border-radius: 14px;
+            padding: 18px 16px;
+            text-align: center;
+            border: 2px solid var(--success);
+            animation: slideUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        .ready-banner-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .ready-banner-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 6px;
+        }
+        .ready-banner-text {
+            font-size: 13px;
+            color: #2E7D32;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        .ready-banner-price {
+            margin-top: 10px;
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--success);
+        }
+
         /* ===== FOOTER ===== */
         .footer {
             text-align: center;
@@ -369,7 +402,7 @@
         <div class="hero-content">
             <div class="hero-icon">🧺</div>
             <div class="hero-title">Laundry28</div>
-            <div class="hero-subtitle">Lacak pesanan Anda dengan mudah</div>
+            <div class="hero-subtitle">Lacak cucian Anda dengan mudah</div>
         </div>
     </div>
 
@@ -377,15 +410,15 @@
         <!-- Loading State -->
         <div id="loadingState" class="loading">
             <div class="spinner"></div>
-            <div class="loading-text">Memuat informasi pesanan...</div>
+            <div class="loading-text">Memuat informasi cucian...</div>
         </div>
 
         <!-- Error State -->
         <div id="errorState" class="error" style="display:none">
             <div class="error-icon">😕</div>
-            <h2>Pesanan Tidak Ditemukan</h2>
+            <h2>Cucian Tidak Ditemukan</h2>
             <p id="errorMessage">Kode tracking tidak valid atau sudah tidak aktif.</p>
-            <a href="/" class="error-btn">🔍 Cek Pesanan Lain</a>
+            <a href="/" class="error-btn">🔍 Cek Cucian Lain</a>
         </div>
 
         <!-- Order Display -->
@@ -407,7 +440,7 @@
             <div class="section-card">
                 <div class="section-title">
                     <span class="section-title-icon order">🧾</span>
-                    Detail Pesanan
+                    Detail Cucian
                 </div>
                 <div class="info-row">
                     <span class="info-label">👤 Pelanggan</span>
@@ -447,7 +480,7 @@
             <div class="section-card">
                 <div class="section-title">
                     <span class="section-title-icon status">📍</span>
-                    Status Pesanan
+                    Status Cucian
                 </div>
                 <div class="status-stepper">
                     <div class="status-stepper-track"></div>
@@ -476,6 +509,17 @@
             </div>
         </div>
 
+            <!-- Ready to Pickup Banner -->
+            <div id="readyBanner" class="ready-banner" style="display:none">
+                <div class="ready-banner-icon">🎉</div>
+                <div class="ready-banner-title">Cucian Anda Sudah Siap!</div>
+                <div class="ready-banner-text">
+                    Segera ambil cucian Anda dan bayar di laundry.
+                </div>
+                <div class="ready-banner-price" id="readyBannerPrice"></div>
+            </div>
+
+            <div class="footer">
         <div class="footer">
             Powered by <a href="https://laundry28.vercel.app" target="_blank">Laundry28</a>
         </div>
@@ -503,14 +547,19 @@
             document.getElementById("orderState").style.display = "none";
             document.getElementById("errorState").style.display = "none";
 
-            const { data: order, error } = await supabaseClient
-                .from('orders')
-                .select(`
-                    *,
-                    laundries!inner (name)
-                `)
-                .eq('tracking_code', trackingCode)
-                .single();
+            // FIX: pakai RPC ke function get_order_by_tracking_code, bukan
+            // query langsung ke tabel `orders`. Ini penting karena RLS
+            // tabel orders cuma izinkan role "authenticated" (staff yang
+            // login) — pengunjung halaman ini pakai anon key (tanpa
+            // login), jadi query .from('orders') akan selalu kosong.
+            // Function ini SECURITY DEFINER dan cuma bisa dipanggil
+            // dengan satu tracking_code spesifik, jadi tetap aman (tidak
+            // bisa dipakai untuk list semua order). Lihat migrasi SQL,
+            // bagian "TRACKING PUBLIK (anon, tanpa login)".
+            const { data: orders, error } = await supabaseClient
+                .rpc('get_order_by_tracking_code', { p_tracking_code: trackingCode });
+
+            const order = orders && orders.length > 0 ? orders[0] : null;
 
             if (error || !order) {
                 showError('Kode tracking tidak ditemukan. Silakan periksa kembali.');
@@ -525,7 +574,9 @@
             document.getElementById("orderState").style.display = "block";
             document.getElementById("trackingCodeDisplay").textContent = order.tracking_code;
 
-            const laundryName = order.laundries?.name || "Laundry28";
+            // FIX: function RPC mengembalikan "laundry_name" langsung
+            // (bukan nested "laundries.name" seperti query lama).
+            const laundryName = order.laundry_name || "Laundry28";
             document.getElementById("laundryName").textContent = laundryName;
 
             document.getElementById("customerName").textContent = order.customer_name || "-";
@@ -557,6 +608,13 @@
             }
 
             updateStatusStepper(order.status);
+
+            // Show ready banner if status is "Siap Diambil"
+            if (order.status === "Siap Diambil") {
+                document.getElementById("readyBanner").style.display = "block";
+                const price = parseInt(order.total_price);
+                document.getElementById("readyBannerPrice").textContent = formatRupiah(price);
+            }
         }
 
         function updateStatusStepper(status) {

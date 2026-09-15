@@ -11,7 +11,11 @@ class LaundryCubit extends Cubit<LaundryState> {
   final LaundryRepository _repository = LaundryRepository();
 
   /// Fetch laundry aktif berdasarkan auth user's staff ID
+  /// Mencoba 2 pendekatan:
+  /// 1. Query sebagai OWNER (laundries.owner_id = staff.id)
+  /// 2. Query sebagai EMPLOYEE (staff.laundry_id → laundries.id)
   Future<void> fetchActiveLaundry(String userId) async {
+    print('🔵 [LAUNDRY_CUBIT] fetchActiveLaundry called with userId: $userId');
     emit(LaundryLoading());
     try {
       // Get auth user's email first
@@ -21,8 +25,10 @@ class LaundryCubit extends Cubit<LaundryState> {
         emit(LaundryUnconfigured());
         return;
       }
+      print('📧 [LAUNDRY] Authenticated user email: ${user.email}');
 
       // Look up staff_id from email
+      print('🔍 [LAUNDRY] Looking up staff_id by email: ${user.email}');
       final staffId = await _repository.getStaffIdByEmail(user.email!);
       if (staffId == null) {
         print('⚠️ [LAUNDRY] No staff record found for email: ${user.email}');
@@ -32,17 +38,30 @@ class LaundryCubit extends Cubit<LaundryState> {
 
       print('✅ [LAUNDRY] Found staff_id: $staffId for email: ${user.email}');
 
-      // Fetch laundry by staff_id (integer)
-      final laundry = await _repository.fetchByStaffId(staffId);
+      // Approach 1: Try as OWNER (owner_id match)
+      print('🔍 [LAUNDRY] Approach 1: Trying as OWNER (owner_id = $staffId)');
+      var laundry = await _repository.fetchByStaffId(staffId);
       if (laundry != null) {
-        print('✅ [LAUNDRY] Active laundry found: ${laundry.name}');
+        print('✅ [LAUNDRY] Active laundry found (as OWNER): ${laundry.name}');
         emit(LaundryLoaded(laundry));
-      } else {
-        print('⚠️ [LAUNDRY] No laundry found for staff: $staffId');
-        emit(LaundryUnconfigured());
+        return;
       }
-    } catch (e) {
+      print('⚠️ [LAUNDRY] Not found as OWNER, trying Approach 2...');
+
+      // Approach 2: Try as EMPLOYEE (staff.laundry_id match)
+      print('🔍 [LAUNDRY] Approach 2: Trying as EMPLOYEE (staff_id=$staffId → laundry_id)');
+      laundry = await _repository.fetchByStaffLaundryId(staffId);
+      if (laundry != null) {
+        print('✅ [LAUNDRY] Active laundry found (as EMPLOYEE): ${laundry.name} (staff.laundry_id=$staffId)');
+        emit(LaundryLoaded(laundry));
+        return;
+      }
+
+      print('❌ [LAUNDRY] No laundry found for staff: $staffId (role: employee, no laundry_id linked)');
+      emit(LaundryUnconfigured());
+    } catch (e, stackTrace) {
       print('❌ [LAUNDRY] Error fetching: $e');
+      print('❌ [LAUNDRY] Stack trace: $stackTrace');
       emit(LaundryUnconfigured());
     }
   }

@@ -15,6 +15,7 @@ import '../../data/models/staff_model.dart';
 import '../widgets/order_card.dart';
 import '../widgets/order_card_skeleton.dart';
 import '../../../../shared/models/order_model.dart';
+import 'package:flutter/foundation.dart';
 
 class OwnerDashboardScreen extends StatefulWidget {
   const OwnerDashboardScreen({super.key});
@@ -44,6 +45,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
   List<StaffModel> _staffList = [];
   StaffModel? _editingStaff;
   bool _isDeletingStaff = false;
+  bool _staffPinVisible = false;
 
   @override
   void initState() {
@@ -79,16 +81,42 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
   }
 
   Future<void> _fetchStaffList() async {
+    // Check if widget is still mounted before starting
+    if (!mounted) return;
+    
     try {
       final repository = AuthRepository();
-      final response = await repository.fetchStaffList();
+      final laundryCubit = context.read<LaundryCubit>();
+      final laundryState = laundryCubit.state;
+      int? laundryId;
+      debugPrint('🔵 [DASHBOARD] _fetchStaffList() START');
+      debugPrint('🔵 [DASHBOARD] LaundryCubit state type: ${laundryState.runtimeType}');
+      if (laundryState is LaundryLoaded) {
+        laundryId = laundryState.laundry.id;
+        debugPrint('🔵 [DASHBOARD] laundryId extracted: $laundryId');
+      } else {
+        debugPrint('🟡 [DASHBOARD] LaundryCubit state is not LaundryLoaded: ${laundryState.runtimeType}');
+      }
+      debugPrint('🔵 [DASHBOARD] Calling repository.fetchStaffList(laundryId: $laundryId)...');
+      final response = await repository.fetchStaffList(laundryId: laundryId);
+      
+      // Check if widget is still mounted after async operation
+      if (!mounted) return;
+      
+      debugPrint('🟢 [DASHBOARD] fetchStaffList returned ${response.length} staff members');
+      for (var i = 0; i < response.length; i++) {
+        final s = response[i];
+        debugPrint('🟢 [DASHBOARD]   [$i] id=${s.id}, name=${s.fullName}, laundry_id=${s.laundryId}');
+      }
       if (mounted) {
         setState(() {
           _staffList = response;
           _isStaffLoading = false;
         });
+        debugPrint('🟢 [DASHBOARD] setState done. _staffList.length = ${_staffList.length}');
       }
     } catch (e) {
+      debugPrint('🔴 [DASHBOARD] _fetchStaffList error: $e');
       if (mounted) {
         setState(() => _isStaffLoading = false);
       }
@@ -161,9 +189,10 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
             print('🔀 [DASHBOARD] Laundry belum disetup, redirect ke setup');
             context.go(AppRoutes.setupLaundry);
           } else if (state is LaundryLoaded) {
-            // Re-load orders when laundry becomes available (e.g. after setup)
+            // Re-load orders AND staff when laundry becomes available (e.g. after setup)
             print('🔄 [DASHBOARD] Laundry loaded, re-fetching orders for: ${state.laundry.id}');
             context.read<DashboardCubit>().fetchOrders(laundryId: state.laundry.id);
+            _fetchStaffList();
           }
         },
         child: Scaffold(
@@ -298,6 +327,40 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
+                      ),
+                      const SizedBox(height: 4),
+                      BlocBuilder<LaundryCubit, LaundryState>(
+                        builder: (context, laundryState) {
+                          if (laundryState is LaundryLoaded) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.storefront_outlined,
+                                    size: 14,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    laundryState.laundry.name,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -1030,7 +1093,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
     final isEditing = _editingStaff != null;
     final nc = TextEditingController(text: isEditing ? _editingStaff!.fullName : '');
     final uc = TextEditingController(text: isEditing ? (_editingStaff!.username ?? '') : '');
-    final pw = TextEditingController(text: isEditing ? (_editingStaff!.pin ?? '') : '');
+    final pw = TextEditingController(text: isEditing ? (_editingStaff!.hasPinHash ? '••••' : '') : '');
     final _formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -1071,10 +1134,22 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
                         ? 'PIN (4-6 digit, kosongkan jika tidak diubah)'
                         : 'PIN (4-6 digit)',
                     prefixIcon: const Icon(Icons.pin_outlined),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _staffPinVisible
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _staffPinVisible = !_staffPinVisible;
+                        });
+                      },
+                    ),
                     border: const OutlineInputBorder(),
                     hintText: 'Masukkan PIN 4-6 digit',
                   ),
-                  obscureText: true,
+                  obscureText: !_staffPinVisible,
                   keyboardType: TextInputType.number,
                   maxLength: 6,
                   validator: (v) {
@@ -1127,24 +1202,145 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen>
     String username,
     String pin,
   ) async {
+    debugPrint('🔵 [DASHBOARD] _createStaff() START — fullName=$fullName, username=$username');
     setState(() => _isStaffLoading = true);
     try {
       final repository = AuthRepository();
+      final laundryCubit = context.read<LaundryCubit>();
+
+      // Check current state synchronously first to avoid hanging on await for
+      // if the cubit is already in a terminal state
+      int? laundryId;
+      final currentState = laundryCubit.state;
+      
+      if (currentState is LaundryLoaded) {
+        laundryId = currentState.laundry.id;
+        debugPrint('🟢 [DASHBOARD] LaundryLoaded from current state — id=$laundryId');
+      } else if (currentState is LaundryUnconfigured) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Laundry belum dikonfigurasi. Silakan setup laundry terlebih dahulu.'),
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+        setState(() => _isStaffLoading = false);
+        return;
+      } else if (currentState is LaundryError) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gagal memuat data laundry: ${currentState.message}'),
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+        setState(() => _isStaffLoading = false);
+        return;
+      } else {
+        // State is LaundryLoading or LaundryInitial — wait for it to change
+        debugPrint('🔵 [DASHBOARD] Waiting for LaundryCubit stream (current: ${currentState.runtimeType})...');
+        await for (final state in laundryCubit.stream) {
+          debugPrint('🔵 [DASHBOARD] LaundryCubit stream event: ${state.runtimeType}');
+          if (state is LaundryLoaded) {
+            laundryId = state.laundry.id;
+            debugPrint('🟢 [DASHBOARD] LaundryLoaded captured — id=$laundryId');
+            break;
+          } else if (state is LaundryUnconfigured) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Laundry belum dikonfigurasi. Silakan setup laundry terlebih dahulu.'),
+                  duration: Duration(seconds: 4),
+                ),
+              );
+            }
+            setState(() => _isStaffLoading = false);
+            return;
+          } else if (state is LaundryError) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Gagal memuat data laundry: ${state.message}'),
+                  duration: const Duration(seconds: 4),
+                ),
+              );
+            }
+            setState(() => _isStaffLoading = false);
+            return;
+          }
+          // Continue waiting if state is LaundryLoading or LaundryInitial
+        }
+      }
+
+      // Verify laundryId was captured
+      if (laundryId == null) {
+        debugPrint('🔴 [DASHBOARD] FATAL: laundryId is still null after state check');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Gagal memuat data laundry'),
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+        setState(() => _isStaffLoading = false);
+        return;
+      }
+
+      if (pin.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('PIN harus diisi untuk karyawan baru.'),
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+        setState(() => _isStaffLoading = false);
+        return;
+      }
+
+      debugPrint('🔵 [DASHBOARD] Calling repository.createStaff(laundryId=$laundryId)...');
       await repository.createStaff(
         fullName: fullName,
         username: username,
         pin: pin,
+        laundryId: laundryId,
       );
+      debugPrint('🟢 [DASHBOARD] repository.createStaff() completed successfully');
+
+      // Check staff list BEFORE re-fetching
+      debugPrint('🔵 [DASHBOARD] Staff list BEFORE _fetchStaffList: ${_staffList.length} items');
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Karyawan berhasil ditambahkan')),
         );
       }
+      debugPrint('🔵 [DASHBOARD] Calling _fetchStaffList() after create...');
       await _fetchStaffList();
+      debugPrint('🟢 [DASHBOARD] _createStaff() completed. New staff list length: ${_staffList.length}');
     } catch (e) {
+      debugPrint('🔴 [DASHBOARD] createStaff error: $e');
+      if (kDebugMode) {
+        print('🔴 [DASHBOARD] createStaff error: $e');
+      }
+      String errorMessage;
+      if (e is Exception) {
+        errorMessage = e.toString();
+      } else if (e is String) {
+        errorMessage = e;
+      } else {
+        errorMessage = 'Terjadi kesalahan yang tidak diketahui';
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menambahkan karyawan: $e')),
+          SnackBar(
+            content: Text('Gagal menambahkan karyawan: $errorMessage'),
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     } finally {

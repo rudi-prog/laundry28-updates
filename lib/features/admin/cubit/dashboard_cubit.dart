@@ -26,7 +26,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   Future<void> updateOrderStatus(int orderId, String newStatus, {int? laundryId}) async {
     try {
-      await _orderRepository.updateOrderStatus(orderId, newStatus);
+      await _orderRepository.updateOrderStatus(orderId, newStatus, laundryId: laundryId);
       await fetchOrders(laundryId: laundryId);
     } catch (e) {
       rethrow;

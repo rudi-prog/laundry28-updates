@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+.nuxt
+.next
+.out
+
+# Dev
+.git
+.github
+.vscode
+.idea
+*.log
+.env
+.env.local
+.env.*.local
+
+# IDE
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts to exclude
+build/app
+build/.cxx
+build/linux
+build/macos
+build/windows
+android
+ios
+web_tracking
+
+# Other
+*.apk
+*.aab
+*.tar.gz
+*.zip
+test
+coverage
+PROJECT_CONTEXT.md
+README.md

@@ -203,6 +203,40 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
                             ),
                           ),
                           const SizedBox(height: 4),
+                          BlocBuilder<LaundryCubit, LaundryState>(
+                            builder: (context, laundryState) {
+                              if (laundryState is LaundryLoaded) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.storefront_outlined,
+                                        size: 14,
+                                        color: AppColors.primary,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        laundryState.laundry.name,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                          const SizedBox(height: 4),
                           Text(
                             DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(DateTime.now()),
                             style: TextStyle(

@@ -7,6 +7,8 @@ import '../../features/admin/presentation/screens/owner_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/employee_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/setup_laundry_screen.dart';
 import '../../features/admin/presentation/screens/new_order_screen.dart';
+import '../../features/admin/presentation/screens/oauth_callback_screen.dart';
+import '../../features/admin/presentation/screens/onboarding_laundry_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
 import '../../features/admin/cubit/auth_cubit.dart';
 
@@ -92,6 +94,9 @@ String? _getDashboardRoute() {
 }
 
 class AppRoutes {
+  /// Global variable to store the deep link URI for OAuth callback
+  static Uri? deeplinkUri;
+
   static const String login = '/login';
   static const String dashboard = '/dashboard';
   static const String ownerDashboard = '/owner/dashboard';
@@ -99,6 +104,8 @@ class AppRoutes {
   static const String tracking = '/tracking';
   static const String newOrder = '/new-order';
   static const String setupLaundry = '/setup-laundry';
+  static const String oauthCallback = '/callback';
+  static const String onboarding = '/onboarding';
 
   static final GoRouter router = GoRouter(
     initialLocation: login,
@@ -107,9 +114,17 @@ class AppRoutes {
       final isAuthenticated = _isAuthenticated();
       final isLoginRoute = state.matchedLocation == login;
       final isTrackingRoute = state.matchedLocation.startsWith(tracking);
+      final isOAuthCallbackRoute = state.matchedLocation == oauthCallback;
+      final isOnboardingRoute = state.matchedLocation == '/onboarding';
 
       // Tracking page bisa diakses tanpa login (public route)
       if (isTrackingRoute) return null;
+
+      // OAuth callback route: jangan redirect, biarkan OAuthCallbackScreen handle
+      if (isOAuthCallbackRoute) return null;
+
+      // Onboarding route: biarkan diakses untuk first-time users
+      if (isOnboardingRoute) return null;
 
       // Jika belum login dan bukan di halaman login → redirect ke login
       if (!isAuthenticated && !isLoginRoute) {
@@ -173,6 +188,16 @@ class AppRoutes {
           final trackingCode = state.uri.queryParameters['code'] ?? '';
           return TrackingScreen(trackingCode: trackingCode);
         },
+      ),
+      GoRoute(
+        name: 'oauth-callback',
+        path: oauthCallback,
+        builder: (context, state) => const OAuthCallbackScreen(),
+      ),
+      GoRoute(
+        name: 'onboarding',
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingLaundryScreen(),
       ),
     ],
   );

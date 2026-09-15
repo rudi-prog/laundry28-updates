@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/supabase/supabase_client.dart';
@@ -18,7 +19,9 @@ class LaundryRepository {
       if (response.isEmpty) return null;
       return response.first['id'] as int;
     } catch (e) {
-      print('LAUNDRY getStaffIdByEmail error: $e');
+      if (kDebugMode) {
+        print('LAUNDRY getStaffIdByEmail error: $e');
+      }
       return null;
     }
   }
@@ -35,8 +38,48 @@ class LaundryRepository {
       if (response.isEmpty) return null;
       return LaundryModel.fromJson(response.first);
     } on PostgrestException catch (e) {
-      print('LAUNDRY Fetch by staffId error: ${e.message}');
+      if (kDebugMode) {
+        print('LAUNDRY Fetch by staffId error: ${e.message}');
+      }
       rethrow;
+    }
+  }
+
+  /// Fetch laundry by staff's laundry_id (for employees)
+  Future<LaundryModel?> fetchByStaffLaundryId(int staffId) async {
+    try {
+      if (kDebugMode) {
+        print('🔍 [LAUNDRY_REPO] fetchByStaffLaundryId: staff_id=$staffId');
+      }
+      // First, get the laundry_id from the staff record
+      final staffData = await _client
+          .from('staff')
+          .select('laundry_id, email, role')
+          .eq('id', staffId)
+          .limit(1)
+          .single();
+
+      final laundryId = staffData['laundry_id'] as int?;
+      if (kDebugMode) {
+        print('📋 [LAUNDRY_REPO] Staff record: email=${staffData['email']}, role=${staffData['role']}, laundry_id=$laundryId');
+      }
+      if (laundryId == null) {
+        if (kDebugMode) {
+          print('⚠️ [LAUNDRY_REPO] staff.laundry_id is NULL for staff_id=$staffId — cannot fetch laundry');
+        }
+        return null;
+      }
+
+      // Then fetch the laundry by its ID
+      if (kDebugMode) {
+        print('🔍 [LAUNDRY_REPO] Fetching laundry by id=$laundryId');
+      }
+      return fetchById(laundryId);
+    } on PostgrestException catch (e) {
+      if (kDebugMode) {
+        print('LAUNDRY Fetch by staff laundry_id error: ${e.message}');
+      }
+      return null;
     }
   }
 
@@ -52,7 +95,9 @@ class LaundryRepository {
       if (response.isEmpty) return null;
       return LaundryModel.fromJson(response.first);
     } on PostgrestException catch (e) {
-      print('LAUNDRY Fetch by ID error: ${e.message}');
+      if (kDebugMode) {
+        print('LAUNDRY Fetch by ID error: ${e.message}');
+      }
       rethrow;
     }
   }
@@ -74,7 +119,9 @@ class LaundryRepository {
 
       return LaundryModel.fromJson(response);
     } on PostgrestException catch (e) {
-      print('LAUNDRY Create error: ${e.message}');
+      if (kDebugMode) {
+        print('LAUNDRY Create error: ${e.message}');
+      }
       rethrow;
     }
   }
@@ -87,7 +134,9 @@ class LaundryRepository {
           .update({'laundry_id': laundryId})
           .eq('id', staffId);
     } on PostgrestException catch (e) {
-      print('LAUNDRY Assign error: ${e.message}');
+      if (kDebugMode) {
+        print('LAUNDRY Assign error: ${e.message}');
+      }
       rethrow;
     }
   }
@@ -116,7 +165,9 @@ class LaundryRepository {
 
       return LaundryModel.fromJson(response);
     } on PostgrestException catch (e) {
-      print('LAUNDRY Update error: ${e.message}');
+      if (kDebugMode) {
+        print('LAUNDRY Update error: ${e.message}');
+      }
       rethrow;
     }
   }

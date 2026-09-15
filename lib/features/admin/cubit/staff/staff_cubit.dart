@@ -28,7 +28,8 @@ class StaffCubit extends Cubit<StaffState> {
     required String username,
     required String password,
     String email = '',
-    String? pin,
+    required String pin,
+    required int laundryId,
   }) async {
     emit(const StaffLoading());
     try {
@@ -38,6 +39,7 @@ class StaffCubit extends Cubit<StaffState> {
         password: password,
         email: email,
         pin: pin,
+        laundryId: laundryId,
       );
       // Refresh list setelah create
       await fetchAllStaff();

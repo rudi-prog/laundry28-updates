@@ -57,16 +57,23 @@ class OrderRepository {
   }
 
   /// Fetch order by tracking code
-  Future<OrderModel?> fetchOrderByTrackingCode(String trackingCode) async {
+  /// FIX #5: Add server-side laundry_id filter for RLS compliance
+  Future<OrderModel?> fetchOrderByTrackingCode(String trackingCode, {int? laundryId}) async {
     try {
       debugPrint('[REPO] Querying Supabase for tracking: $trackingCode');
-      final queryFuture = _client
+      // Server-side laundry_id filter to avoid fetching all orders
+      var query = _client
           .from('orders')
           .select()
-          .eq('tracking_code', trackingCode)
-          .limit(1);
+          .eq('tracking_code', trackingCode);
 
-      final response = await queryFuture.timeout(
+      if (laundryId != null) {
+        query = query.eq('laundry_id', laundryId);
+      }
+
+      final response = await query
+          .limit(1)
+          .timeout(
         const Duration(seconds: 10),
         onTimeout: () {
           debugPrint('[REPO] TIMEOUT after 10s for tracking: $trackingCode');
@@ -137,19 +144,25 @@ class OrderRepository {
   }
 
   /// Update order status di Supabase
-  Future<OrderModel> updateOrderStatus(int orderId, String newStatus) async {
+  /// FIX #5: Add laundry_id filter to RLS policy compliance
+  Future<OrderModel> updateOrderStatus(int orderId, String newStatus, {int? laundryId}) async {
     try {
       // Pastikan session aktif sebelum update
       _ensureSessionActive();
 
-      final response = await _client
+      // Server-side laundry_id filter to ensure RLS compliance
+      var updateQuery = _client
           .from('orders')
           .update({
             'status': newStatus,
             'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', orderId)
-          .select();
+          });
+
+      if (laundryId != null) {
+        updateQuery = updateQuery.eq('laundry_id', laundryId);
+      }
+
+      final response = await updateQuery.eq('id', orderId).select();
 
       if (response.isEmpty) {
         throw Exception('Order not found');

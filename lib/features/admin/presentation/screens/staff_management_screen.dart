@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../cubit/staff/staff_cubit.dart';
 import '../../cubit/staff/staff_state.dart';
+import '../../cubit/laundry_cubit.dart';
 import '../../data/models/staff_model.dart';
 
 /// Screen untuk manajemen karyawan (CRUD)
@@ -70,7 +71,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
     _fullNameController.text = staff.fullName;
     _usernameController.text = staff.username ?? '';
     _passwordController.clear();
-    _pinController.text = staff.pin ?? '';
+    _pinController.text = staff.hasPinHash ? '••••' : '';
     setState(() {
       _obscurePassword = true;
       _obscurePin = true;
@@ -140,11 +141,60 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
           );
     } else {
       if (password.isEmpty) return;
+      // Get laundry_id from LaundryCubit to assign employee to the correct laundry
+      final laundryCubit = context.read<LaundryCubit>();
+
+      // Wait for LaundryCubit to reach a terminal state (LaundryLoaded or LaundryUnconfigured)
+      // This prevents race condition when user tries to add staff before laundry data is loaded
+      await for (final state in laundryCubit.stream) {
+        if (state is LaundryLoaded) {
+          break;
+        } else if (state is LaundryUnconfigured) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Laundry belum dikonfigurasi. Silakan setup laundry terlebih dahulu.'),
+                duration: Duration(seconds: 4),
+              ),
+            );
+          }
+          return;
+        } else if (state is LaundryError) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Gagal memuat data laundry: ${state.message}'),
+                duration: const Duration(seconds: 4),
+              ),
+            );
+          }
+          return;
+        }
+        // Continue waiting if state is LaundryLoading or LaundryInitial
+      }
+
+      // At this point, we know state is LaundryLoaded
+      final laundryLoaded = laundryCubit.state as LaundryLoaded;
+      final laundryId = laundryLoaded.laundry.id;
+
+      if (pin.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('PIN harus diisi untuk karyawan baru.'),
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+        return;
+      }
+
       await context.read<StaffCubit>().addStaff(
             fullName: fullName,
             username: username,
             password: password,
-            pin: pin.isEmpty ? null : pin,
+            pin: pin,
+            laundryId: laundryId,
           );
     }
 
@@ -232,7 +282,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'PIN saat ini: ${_editingStaff!.pin ?? "belum diatur"}',
+                            'PIN saat ini: ${_editingStaff!.hasPinHash ? "Sudah diatur (hashed)" : "belum diatur"}',
                             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                           ),
                         ),
@@ -344,7 +394,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
             Expanded(
               child: ListView.separated(
                 itemCount: staffList.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final staff = staffList[index];
                   return _buildStaffCard(staff);
@@ -364,7 +414,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.primary.withOpacity(0.1),
+          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
           child: Icon(Icons.person, color: AppColors.primary),
         ),
         title: Text(staff.fullName, style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -374,13 +424,13 @@ class _StaffManagementScreenState extends State<StaffManagementScreen> {
             const SizedBox(height: 4),
             Text('Username: ${staff.username ?? "-"}'),
             if (staff.email.isNotEmpty) Text('Email: ${staff.email}'),
-            if (staff.pin != null && staff.pin!.isNotEmpty)
+            if (staff.hasPinHash)
               Row(
                 children: [
                   Icon(Icons.pin_outlined, size: 12, color: Colors.green[700]),
                   const SizedBox(width: 4),
                   Text(
-                    'PIN: ${staff.pin}',
+                    'PIN: Sudah diatur (hashed)',
                     style: TextStyle(fontSize: 12, color: Colors.green[700]),
                   ),
                 ],
