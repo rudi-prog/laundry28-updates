@@ -22,6 +22,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   String _filterStatus = 'all';
 
   @override
+  void initState() {
+    super.initState();
+    context.read<InvoiceCubit>().fetchOwnerInvoices(widget.laundryId);
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
