@@ -3,225 +3,5066 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laundry28 - Aplikasi Manajemen Laundry #1 di Indonesia</title>
-    <meta name="description" content="Kelola laundry Anda lebih mudah dengan Laundry28. Aplikasi manajemen laundry berbasis cloud dengan fitur order management, laporan keuangan, multi-laundry support, dan keamanan data terjamin.">
-    <meta name="keywords" content="aplikasi laundry, manajemen laundry, laundry management, laundry28, aplikasi laundry indonesia">
+
+    <title>Laundry28 - Kendalikan Laundry Anda, Bukan Sebaliknya</title>
+
+    <meta
+        name="description"
+        content="Laundry28 membantu owner laundry mengontrol order, pelanggan, karyawan, pendapatan, dan operasional dalam satu aplikasi."
+    >
+
+    <meta
+        name="keywords"
+        content="aplikasi laundry, manajemen laundry, laundry management, laundry28, aplikasi laundry indonesia"
+    >
+
     <meta name="author" content="Star28 Tech">
-    <meta property="og:title" content="Laundry28 - Aplikasi Manajemen Laundry #1 di Indonesia">
-    <meta property="og:description" content="Kelola laundry Anda lebih mudah dengan Laundry28. Gratis untuk memulai!">
+
+    <meta
+        property="og:title"
+        content="Laundry28 - Kendalikan Laundry Anda, Bukan Sebaliknya"
+    >
+
+    <meta
+        property="og:description"
+        content="Bantu owner laundry mengurangi pekerjaan manual dan mendapatkan kontrol lebih baik atas operasional laundry."
+    >
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://laundry28.vercel.app">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧺</text></svg>">
+
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%BA%3C/text%3E%3C/svg%3E"
+    >
+
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --primary: #2563EB; --primary-dark: #1D4ED8; --primary-light: #3B82F6;
-            --secondary: #F59E0B; --secondary-dark: #D97706;
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-light: #3B82F6;
+
+            --secondary: #F59E0B;
+            --secondary-dark: #D97706;
+
             --accent: #10B981;
-            --text-primary: #1E293B; --text-secondary: #64748B; --text-tertiary: #94A3B8;
-            --bg-white: #FFFFFF; --bg-light: #F8FAFC; --bg-dark: #0F172A;
+            --danger: #EF4444;
+
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --text-tertiary: #94A3B8;
+
+            --bg-white: #FFFFFF;
+            --bg-light: #F8FAFC;
+            --bg-dark: #0F172A;
+
             --border: #E2E8F0;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-            --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
+
+            --shadow-sm:
+                0 1px 2px rgba(0, 0, 0, 0.05);
+
+            --shadow-md:
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+            --shadow-lg:
+                0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+            --shadow-xl:
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+
+            --promo-height: 44px;
+            --navbar-height: 70px;
         }
-        html { scroll-behavior: smooth; font-size: 16px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: var(--text-primary); background: var(--bg-white); line-height: 1.6; overflow-x: hidden; }
-        a { text-decoration: none; color: inherit; }
-        img { max-width: 100%; height: auto; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-        .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
-        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); transition: all 0.3s ease; }
-        .navbar.scrolled { box-shadow: var(--shadow-md); }
-        .navbar .container { display: flex; justify-content: space-between; align-items: center; height: 70px; }
-        .navbar-brand { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-        .navbar-brand .logo { font-size: 2rem; }
-        .navbar-brand span { background: linear-gradient(135deg, var(--primary), var(--primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .navbar-menu { display: flex; align-items: center; gap: 32px; list-style: none; }
-        .navbar-menu a { font-size: 0.95rem; font-weight: 500; color: var(--text-secondary); transition: color 0.3s ease; position: relative; }
-        .navbar-menu a:hover { color: var(--primary); }
-        .navbar-menu a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--primary); transition: width 0.3s ease; }
-        .navbar-menu a:hover::after { width: 100%; }
-        .navbar-cta { display: flex; align-items: center; gap: 16px; }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s ease; white-space: nowrap; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.5); }
-        .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-secondary:hover { background: var(--primary); color: white; }
-        .btn-large { padding: 16px 40px; font-size: 1.1rem; border-radius: var(--radius-md); }
-        .btn-icon { font-size: 1.2em; }
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary); }
-        .hero { padding: 140px 0 100px; background: linear-gradient(180deg, #EFF6FF 0%, var(--bg-white) 100%); position: relative; overflow: hidden; }
-        .hero::before { content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%); border-radius: 50%; }
-        .hero::after { content: ''; position: absolute; bottom: -30%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%); border-radius: 50%; }
-        .hero .container { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 1; }
-        .hero-content { animation: slideInLeft 0.8s ease; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(37,99,235,0.1); border-radius: 50px; font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-bottom: 24px; }
-        .hero-badge .dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: float 2s infinite; }
-        .hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.15; margin-bottom: 20px; color: var(--text-primary); }
-        .hero h1 .highlight { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .hero-description { font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7; }
-        .hero-buttons { display: flex; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
-        .hero-stats { display: flex; gap: 40px; }
-        .stat-item { text-align: left; }
-        .stat-number { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
-        .stat-label { font-size: 0.85rem; color: var(--text-tertiary); font-weight: 500; }
-        .hero-visual { animation: slideInRight 0.8s ease; display: flex; justify-content: center; }
-        .phone-mockup { position: relative; width: 280px; height: 560px; background: var(--bg-dark); border-radius: 40px; padding: 12px; box-shadow: var(--shadow-xl), 0 0 0 2px rgba(255,255,255,0.1) inset; animation: float 6s ease-in-out infinite; }
-        .phone-screen { width: 100%; height: 100%; background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; text-align: center; }
-        .phone-screen .app-icon { font-size: 4rem; margin-bottom: 16px; }
-        .phone-screen h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
-        .phone-screen p { font-size: 0.85rem; opacity: 0.8; }
-        .phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 28px; background: var(--bg-dark); border-radius: 0 0 18px 18px; z-index: 2; }
-        .features { padding: 100px 0; background: var(--bg-white); }
-        .section-header { text-align: center; margin-bottom: 60px; }
-        .section-label { display: inline-block; padding: 6px 16px; background: rgba(37,99,235,0.1); border-radius: 50px; font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-bottom: 16px; }
-        .section-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 16px; color: var(--text-primary); }
-        .section-subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
-        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-        .feature-card { padding: 32px; background: var(--bg-light); border-radius: var(--radius-lg); border: 1px solid var(--border); transition: all 0.3s ease; }
-        .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
-        .feature-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; }
-        .feature-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary); }
-        .feature-card p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; }
-        .how-it-works { padding: 100px 0; background: var(--bg-light); }
-        .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; position: relative; }
-        .steps-grid::before { content: ''; position: absolute; top: 40px; left: 15%; right: 15%; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 2px; }
-        .step-item { text-align: center; position: relative; z-index: 1; }
-        .step-number { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: white; margin: 0 auto 24px; box-shadow: 0 8px 24px rgba(37,99,235,0.3); border: 4px solid var(--bg-light); }
-        .step-item h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary); }
-        .step-item p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; }
-        .pricing { padding: 100px 0; background: var(--bg-white); }
-        .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; max-width: 800px; margin: 0 auto; }
-        .pricing-card { padding: 40px; background: var(--bg-light); border-radius: var(--radius-lg); border: 2px solid var(--border); text-align: center; transition: all 0.3s ease; position: relative; }
-        .pricing-card.popular { border-color: var(--primary); background: linear-gradient(180deg, #EFF6FF 0%, var(--bg-light) 100%); transform: scale(1.05); }
-        .pricing-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); padding: 6px 20px; background: linear-gradient(135deg, var(--secondary), var(--secondary-dark)); border-radius: 50px; font-size: 0.8rem; font-weight: 700; color: white; white-space: nowrap; }
-        .pricing-card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
-        .pricing-price { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
-        .pricing-price span { font-size: 1rem; font-weight: 500; color: var(--text-secondary); }
-        .pricing-period { font-size: 0.9rem; color: var(--text-tertiary); margin-bottom: 24px; }
-        .pricing-features { list-style: none; text-align: left; margin-bottom: 32px; }
-        .pricing-features li { padding: 8px 0; font-size: 0.95rem; color: var(--text-secondary); display: flex; align-items: center; gap: 10px; }
-        .pricing-features li::before { content: '\2713'; color: var(--accent); font-weight: 700; font-size: 1.1rem; }
-        .testimonials { padding: 100px 0; background: var(--bg-light); }
-        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-        .testimonial-card { padding: 32px; background: var(--bg-white); border-radius: var(--radius-lg); border: 1px solid var(--border); transition: all 0.3s ease; }
-        .testimonial-card:hover { box-shadow: var(--shadow-lg); }
-        .testimonial-stars { color: var(--secondary); font-size: 1.1rem; margin-bottom: 16px; }
-        .testimonial-text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
-        .testimonial-author { display: flex; align-items: center; gap: 12px; }
-        .testimonial-avatar { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: 700; }
-        .testimonial-name { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
-        .testimonial-role { font-size: 0.8rem; color: var(--text-tertiary); }
-        .faq { padding: 100px 0; background: var(--bg-white); }
-        .faq-list { max-width: 700px; margin: 0 auto; }
-        .faq-item { border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px; overflow: hidden; transition: all 0.3s ease; }
-        .faq-item:hover { border-color: var(--primary-light); }
-        .faq-question { padding: 20px 24px; background: var(--bg-light); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1rem; font-weight: 600; color: var(--text-primary); transition: all 0.3s ease; }
-        .faq-question:hover { background: #EFF6FF; }
-        .faq-toggle { font-size: 1.5rem; color: var(--primary); transition: transform 0.3s ease; flex-shrink: 0; margin-left: 16px; }
-        .faq-item.active .faq-toggle { transform: rotate(45deg); }
-        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
-        .faq-item.active .faq-answer { max-height: 300px; padding: 0 24px 20px; }
-        .faq-answer p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; }
-        .cta { padding: 100px 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); position: relative; overflow: hidden; }
-        .cta::before { content: ''; position: absolute; top: -50%; right: -20%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); border-radius: 50%; }
-        .cta .container { text-align: center; position: relative; z-index: 1; }
-        .cta h2 { font-size: 2.5rem; font-weight: 800; color: white; margin-bottom: 16px; }
-        .cta p { font-size: 1.15rem; color: rgba(255,255,255,0.85); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
-        .btn-white { background: white; color: var(--primary); box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
-        .btn-white:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-        .footer { padding: 60px 0 30px; background: var(--bg-dark); color: rgba(255,255,255,0.7); }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-        .footer-brand { font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 12px; }
-        .footer-description { font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; }
-        .footer-social { display: flex; gap: 12px; }
-        .footer-social a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.3s ease; }
-        .footer-social a:hover { background: var(--primary); transform: translateY(-2px); }
-        .footer-column h4 { font-size: 1rem; font-weight: 700; color: white; margin-bottom: 16px; }
-        .footer-column ul { list-style: none; }
-        .footer-column ul li { margin-bottom: 10px; }
-        .footer-column ul li a { font-size: 0.9rem; transition: color 0.3s ease; }
-        .footer-column ul li a:hover { color: white; }
-        .footer-bottom { padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
-        .footer-bottom-links { display: flex; gap: 24px; }
-        .footer-bottom-links a:hover { color: white; }
-        .ad-banner { padding: 16px 0; background: linear-gradient(135deg, #FEF3C7, #FDE68A); text-align: center; font-size: 0.9rem; color: var(--text-secondary); }
-        .ad-banner strong { color: var(--text-primary); }
-        .ad-banner a { color: var(--primary); font-weight: 600; text-decoration: underline; }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+            scroll-padding-top: calc(
+                var(--promo-height) +
+                var(--navbar-height) +
+                16px
+            );
+        }
+
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                "Helvetica Neue",
+                Arial,
+                sans-serif;
+
+            color: var(--text-primary);
+            background: var(--bg-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* =========================
+           ANIMATIONS
+        ========================= */
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+
+            transition:
+                opacity 0.6s ease,
+                transform 0.6s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* =========================
+           PROMO
+        ========================= */
+
+        .ad-banner {
+            min-height: var(--promo-height);
+            padding: 10px 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #FEF3C7,
+                    #FDE68A
+                );
+
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-wrap: wrap;
+            gap: 4px;
+
+            position: relative;
+            z-index: 1100;
+        }
+
+        .ad-banner strong {
+            color: var(--text-primary);
+        }
+
+        .ad-banner a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .ad-banner a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            position: fixed;
+
+            top: var(--promo-height);
+            left: 0;
+            right: 0;
+
+            z-index: 1000;
+
+            background: rgba(255, 255, 255, 0.95);
+
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+
+            border-bottom: 1px solid var(--border);
+
+            transition:
+                box-shadow 0.3s ease,
+                background 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            height: var(--navbar-height);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 1.5rem;
+            font-weight: 800;
+
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .navbar-brand .logo {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .navbar-brand span:last-child {
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+
+            list-style: none;
+        }
+
+        .navbar-menu a {
+            font-size: 0.92rem;
+            font-weight: 500;
+
+            color: var(--text-secondary);
+
+            transition: color 0.3s ease;
+
+            position: relative;
+        }
+
+        .navbar-menu a:hover {
+            color: var(--primary);
+        }
+
+        .navbar-menu a::after {
+            content: "";
+
+            position: absolute;
+
+            bottom: -4px;
+            left: 0;
+
+            width: 0;
+            height: 2px;
+
+            background: var(--primary);
+
+            transition: width 0.3s ease;
+        }
+
+        .navbar-menu a:hover::after {
+            width: 100%;
+        }
+
+        .navbar-cta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 12px 28px;
+
+            border-radius: var(--radius-sm);
+
+            font-size: 0.95rem;
+            font-weight: 600;
+
+            cursor: pointer;
+            border: none;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease,
+                background 0.3s ease,
+                color 0.3s ease;
+
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            color: white;
+
+            box-shadow:
+                0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 6px 20px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-large {
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            border-radius: var(--radius-md);
+        }
+
+        .btn-icon {
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary);
+
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* =========================
+           MOBILE MENU
+        ========================= */
+
+        .mobile-menu-btn {
+            display: none;
+
+            background: none;
+            border: none;
+
+            font-size: 1.5rem;
+
+            cursor: pointer;
+
+            color: var(--text-primary);
+
+            width: 44px;
+            height: 44px;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu {
+            display: none;
+
+            position: fixed;
+
+            top:
+                calc(
+                    var(--promo-height) +
+                    var(--navbar-height)
+                );
+
+            left: 0;
+            right: 0;
+
+            background: white;
+
+            padding: 24px;
+
+            border-bottom: 1px solid var(--border);
+
+            box-shadow: var(--shadow-lg);
+
+            z-index: 999;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-menu a {
+            display: block;
+
+            padding: 12px 0;
+
+            font-size: 1rem;
+            font-weight: 500;
+
+            color: var(--text-secondary);
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu a:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu .btn {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            padding:
+                calc(
+                    130px +
+                    var(--promo-height) +
+                    var(--navbar-height)
+                )
+                0
+                100px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #EFF6FF 0%,
+                    var(--bg-white) 100%
+                );
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+
+            position: absolute;
+
+            top: -50%;
+            right: -20%;
+
+            width: 600px;
+            height: 600px;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(37, 99, 235, 0.08) 0%,
+                    transparent 70%
+                );
+
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+
+            bottom: -30%;
+            left: -10%;
+
+            width: 400px;
+            height: 400px;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(245, 158, 11, 0.08) 0%,
+                    transparent 70%
+                );
+
+            border-radius: 50%;
+        }
+
+        .hero .container {
+            display: grid;
+
+            grid-template-columns:
+                1.1fr
+                0.9fr;
+
+            gap: 60px;
+
+            align-items: center;
+
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            animation:
+                slideInLeft 0.8s ease;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 16px;
+
+            background:
+                rgba(37, 99, 235, 0.1);
+
+            border-radius: 50px;
+
+            font-size: 0.85rem;
+            font-weight: 600;
+
+            color: var(--primary);
+
+            margin-bottom: 24px;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+
+            background: var(--accent);
+
+            border-radius: 50%;
+
+            animation:
+                float 2s infinite;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+
+            font-weight: 800;
+
+            line-height: 1.12;
+
+            margin-bottom: 24px;
+
+            color: var(--text-primary);
+        }
+
+        .hero h1 .highlight {
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--secondary)
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+
+            color: var(--text-secondary);
+
+            margin-bottom: 32px;
+
+            line-height: 1.75;
+
+            max-width: 650px;
+        }
+
+        .hero-buttons {
+            display: flex;
+
+            gap: 16px;
+
+            margin-bottom: 40px;
+
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+
+            font-weight: 800;
+
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+
+            color: var(--text-tertiary);
+
+            font-weight: 500;
+        }
+
+        .hero-visual {
+            animation:
+                slideInRight 0.8s ease;
+
+            display: flex;
+
+            justify-content: center;
+        }
+
+        /* =========================
+           PHONE MOCKUP
+        ========================= */
+
+        .phone-mockup {
+            position: relative;
+
+            width: 280px;
+            height: 560px;
+
+            background: var(--bg-dark);
+
+            border-radius: 40px;
+
+            padding: 12px;
+
+            box-shadow:
+                var(--shadow-xl),
+                0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+
+            animation:
+                float 6s ease-in-out infinite;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    var(--primary) 0%,
+                    var(--primary-dark) 100%
+                );
+
+            border-radius: 30px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            padding: 20px;
+
+            text-align: center;
+        }
+
+        .phone-screen .app-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .phone-screen h3 {
+            font-size: 1.5rem;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+        .phone-screen p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .phone-screen .mockup-stat {
+            background:
+                rgba(255, 255, 255, 0.2);
+
+            padding: 8px 16px;
+
+            border-radius: 8px;
+
+            margin-bottom: 8px;
+
+            font-size: 0.8rem;
+
+            opacity: 0.85;
+        }
+
+        .phone-notch {
+            position: absolute;
+
+            top: 12px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 120px;
+            height: 28px;
+
+            background: var(--bg-dark);
+
+            border-radius:
+                0 0 18px 18px;
+
+            z-index: 2;
+        }
+
+        /* =========================
+           SECTION GENERAL
+        ========================= */
+
+        .section-header {
+            text-align: center;
+
+            margin-bottom: 60px;
+        }
+
+        .section-label {
+            display: inline-block;
+
+            padding: 6px 16px;
+
+            background:
+                rgba(37, 99, 235, 0.1);
+
+            border-radius: 50px;
+
+            font-size: 0.85rem;
+
+            font-weight: 600;
+
+            color: var(--primary);
+
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+
+            font-weight: 800;
+
+            margin-bottom: 16px;
+
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+
+            color: var(--text-secondary);
+
+            max-width: 700px;
+
+            margin: 0 auto;
+        }
+
+        /* =========================
+           OWNER PROBLEM
+        ========================= */
+
+        .owner-problem {
+            padding: 100px 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #FFFFFF 0%,
+                    #FEF2F2 100%
+                );
+        }
+
+        .problem-intro {
+            max-width: 780px;
+
+            margin: 0 auto 50px;
+
+            text-align: center;
+        }
+
+        .problem-intro h3 {
+            font-size: 1.8rem;
+
+            line-height: 1.3;
+
+            margin-bottom: 16px;
+
+            color: var(--text-primary);
+        }
+
+        .problem-intro p {
+            font-size: 1.05rem;
+
+            color: var(--text-secondary);
+        }
+
+        .problem-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 24px;
+        }
+
+        .problem-card {
+            padding: 30px;
+
+            background: white;
+
+            border:
+                1px solid #FECACA;
+
+            border-radius:
+                var(--radius-lg);
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-5px);
+
+            box-shadow: var(--shadow-lg);
+        }
+
+        .problem-icon {
+            width: 52px;
+            height: 52px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                #FEF2F2;
+
+            border-radius:
+                var(--radius-md);
+
+            font-size: 1.5rem;
+
+            margin-bottom: 18px;
+        }
+
+        .problem-card h3 {
+            font-size: 1.1rem;
+
+            margin-bottom: 10px;
+
+            font-weight: 700;
+        }
+
+        .problem-card p {
+            font-size: 0.94rem;
+
+            color: var(--text-secondary);
+
+            line-height: 1.65;
+        }
+
+        .problem-loss {
+            margin-top: 45px;
+
+            padding: 28px 32px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #FFF7ED,
+                    #FEF3C7
+                );
+
+            border:
+                1px solid #FCD34D;
+
+            border-radius:
+                var(--radius-lg);
+
+            text-align: center;
+        }
+
+        .problem-loss strong {
+            display: block;
+
+            font-size: 1.25rem;
+
+            margin-bottom: 8px;
+
+            color: #92400E;
+        }
+
+        .problem-loss span {
+            color: #78350F;
+
+            font-size: 0.95rem;
+        }
+
+        /* =========================
+           TRANSFORMATION
+        ========================= */
+
+        .transformation {
+            padding: 100px 0;
+
+            background: var(--bg-light);
+        }
+
+        .transformation-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                80px
+                1fr;
+
+            gap: 20px;
+
+            align-items: stretch;
+
+            max-width: 1000px;
+
+            margin: 0 auto;
+        }
+
+        .before-card,
+        .after-card {
+            padding: 36px;
+
+            border-radius:
+                var(--radius-xl);
+
+            border: 1px solid var(--border);
+        }
+
+        .before-card {
+            background: white;
+
+            border-color:
+                #FECACA;
+        }
+
+        .after-card {
+            background:
+                linear-gradient(
+                    180deg,
+                    #EFF6FF 0%,
+                    #FFFFFF 100%
+                );
+
+            border-color:
+                #BFDBFE;
+
+            box-shadow:
+                var(--shadow-lg);
+        }
+
+        .transformation-label {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 6px 14px;
+
+            border-radius: 50px;
+
+            font-size: 0.8rem;
+
+            font-weight: 700;
+
+            margin-bottom: 20px;
+        }
+
+        .before-label {
+            background:
+                #FEF2F2;
+
+            color:
+                #B91C1C;
+        }
+
+        .after-label {
+            background:
+                #DBEAFE;
+
+            color:
+                var(--primary-dark);
+        }
+
+        .before-card h3,
+        .after-card h3 {
+            font-size: 1.5rem;
+
+            margin-bottom: 24px;
+
+            line-height: 1.3;
+        }
+
+        .transformation-list {
+            list-style: none;
+        }
+
+        .transformation-list li {
+            display: flex;
+
+            gap: 12px;
+
+            align-items: flex-start;
+
+            padding: 12px 0;
+
+            border-bottom:
+                1px solid var(--border);
+
+            font-size: 0.95rem;
+
+            color:
+                var(--text-secondary);
+        }
+
+        .transformation-list li:last-child {
+            border-bottom: none;
+        }
+
+        .before-card .transformation-list li::before {
+            content: "×";
+
+            color:
+                var(--danger);
+
+            font-weight: 800;
+
+            font-size: 1.1rem;
+        }
+
+        .after-card .transformation-list li::before {
+            content: "✓";
+
+            color:
+                var(--accent);
+
+            font-weight: 800;
+
+            font-size: 1.1rem;
+        }
+
+        .transformation-arrow {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 2rem;
+
+            color:
+                var(--primary);
+
+            font-weight: 800;
+        }
+
+        /* =========================
+           OWNER BENEFITS
+        ========================= */
+
+        .benefits {
+            padding: 100px 0;
+
+            background: white;
+        }
+
+        .benefits-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+        }
+
+        .benefit-card {
+            padding: 30px 24px;
+
+            background:
+                var(--bg-light);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius-lg);
+
+            text-align: center;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+
+            box-shadow:
+                var(--shadow-lg);
+        }
+
+        .benefit-icon {
+            font-size: 2rem;
+
+            margin-bottom: 16px;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.05rem;
+
+            margin-bottom: 10px;
+        }
+
+        .benefit-card p {
+            font-size: 0.9rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.6;
+        }
+
+        /* =========================
+           CUSTOMER EXPERIENCE
+        ========================= */
+
+        .customer-experience {
+            padding: 100px 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #ECFDF5 0%,
+                    #FFFFFF 100%
+                );
+        }
+
+        .customer-intro {
+            max-width: 800px;
+
+            margin: 0 auto 50px;
+
+            text-align: center;
+        }
+
+        .customer-intro h3 {
+            font-size: 1.8rem;
+
+            line-height: 1.35;
+
+            margin-bottom: 16px;
+        }
+
+        .customer-intro p {
+            font-size: 1.05rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.75;
+        }
+
+        .customer-flow {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 24px;
+
+            position: relative;
+
+            max-width: 1050px;
+
+            margin: 0 auto;
+        }
+
+        .customer-flow-card {
+            padding: 34px 30px;
+
+            background: white;
+
+            border:
+                1px solid #A7F3D0;
+
+            border-radius:
+                var(--radius-lg);
+
+            text-align: center;
+
+            box-shadow:
+                var(--shadow-sm);
+
+            position: relative;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .customer-flow-card:hover {
+            transform:
+                translateY(-5px);
+
+            box-shadow:
+                var(--shadow-lg);
+        }
+
+        .customer-flow-number {
+            width: 46px;
+            height: 46px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--accent),
+                    #34D399
+                );
+
+            color: white;
+
+            border-radius: 50%;
+
+            font-size: 1.1rem;
+
+            font-weight: 800;
+        }
+
+        .customer-flow-icon {
+            font-size: 2.4rem;
+
+            margin-bottom: 16px;
+        }
+
+        .customer-flow-card h3 {
+            font-size: 1.15rem;
+
+            margin-bottom: 10px;
+        }
+
+        .customer-flow-card p {
+            font-size: 0.94rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.65;
+        }
+
+        .customer-highlight {
+            margin-top: 45px;
+
+            max-width: 900px;
+
+            margin-left: auto;
+            margin-right: auto;
+
+            padding: 32px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #D1FAE5,
+                    #ECFDF5
+                );
+
+            border:
+                1px solid #6EE7B7;
+
+            border-radius:
+                var(--radius-xl);
+
+            text-align: center;
+        }
+
+        .customer-highlight h3 {
+            font-size: 1.45rem;
+
+            margin-bottom: 12px;
+
+            color:
+                #065F46;
+        }
+
+        .customer-highlight p {
+            color:
+                #047857;
+
+            font-size: 1rem;
+
+            line-height: 1.7;
+        }
+
+        .customer-highlight strong {
+            color:
+                #064E3B;
+        }
+
+        /* =========================
+           OWNER TO CUSTOMER FLOW
+        ========================= */
+
+        .business-chain {
+            padding: 80px 0;
+
+            background:
+                var(--bg-dark);
+
+            color: white;
+        }
+
+        .business-chain .section-label {
+            background:
+                rgba(255, 255, 255, 0.1);
+
+            color:
+                #93C5FD;
+        }
+
+        .business-chain .section-title {
+            color: white;
+        }
+
+        .business-chain .section-subtitle {
+            color:
+                rgba(255, 255, 255, 0.7);
+        }
+
+        .chain-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+
+            max-width: 1000px;
+
+            margin: 0 auto;
+        }
+
+        .chain-card {
+            padding: 30px;
+
+            background:
+                rgba(255, 255, 255, 0.06);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            border-radius:
+                var(--radius-lg);
+
+            text-align: center;
+
+            transition:
+                transform 0.3s ease,
+                background 0.3s ease;
+        }
+
+        .chain-card:hover {
+            transform:
+                translateY(-5px);
+
+            background:
+                rgba(255, 255, 255, 0.09);
+        }
+
+        .chain-icon {
+            font-size: 2.5rem;
+
+            margin-bottom: 16px;
+        }
+
+        .chain-card h3 {
+            font-size: 1.2rem;
+
+            margin-bottom: 10px;
+        }
+
+        .chain-card p {
+            color:
+                rgba(255, 255, 255, 0.7);
+
+            font-size: 0.92rem;
+
+            line-height: 1.65;
+        }
+
+        .chain-arrow {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 1.5rem;
+
+            color:
+                #60A5FA;
+        }
+
+        /* =========================
+           SOLUTION
+        ========================= */
+
+        .solution {
+            padding: 100px 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #EFF6FF 0%,
+                    #FFFFFF 100%
+                );
+        }
+
+        .solution-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 24px;
+        }
+
+        .solution-card {
+            padding: 32px;
+
+            background: white;
+
+            border:
+                1px solid #DBEAFE;
+
+            border-radius:
+                var(--radius-lg);
+
+            box-shadow:
+                var(--shadow-sm);
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .solution-card:hover {
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                var(--shadow-lg);
+        }
+
+        .solution-icon {
+            width: 58px;
+            height: 58px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            border-radius:
+                var(--radius-md);
+
+            font-size: 1.5rem;
+
+            margin-bottom: 20px;
+        }
+
+        .solution-card h3 {
+            font-size: 1.15rem;
+
+            margin-bottom: 10px;
+        }
+
+        .solution-card p {
+            font-size: 0.94rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.65;
+        }
+
+        /* =========================
+           FEATURES
+        ========================= */
+
+        .features {
+            padding: 100px 0;
+
+            background:
+                var(--bg-white);
+        }
+
+        .features-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 24px;
+        }
+
+        .feature-card {
+            padding: 32px;
+
+            background:
+                var(--bg-light);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius-lg);
+
+            transition:
+                all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                var(--shadow-lg);
+
+            border-color:
+                var(--primary-light);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            border-radius:
+                var(--radius-md);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 1.5rem;
+
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.15rem;
+
+            font-weight: 700;
+
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.6;
+        }
+
+        /* =========================
+           HOW IT WORKS
+        ========================= */
+
+        .how-it-works {
+            padding: 100px 0;
+
+            background:
+                var(--bg-light);
+        }
+
+        .steps-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 40px;
+
+            position: relative;
+        }
+
+        .steps-grid::before {
+            content: "";
+
+            position: absolute;
+
+            top: 40px;
+
+            left: 15%;
+            right: 15%;
+
+            height: 3px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--primary),
+                    var(--secondary)
+                );
+
+            border-radius: 2px;
+        }
+
+        .step-item {
+            text-align: center;
+
+            position: relative;
+
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 2rem;
+
+            font-weight: 800;
+
+            color: white;
+
+            margin:
+                0 auto 24px;
+
+            box-shadow:
+                0 8px 24px
+                rgba(37, 99, 235, 0.3);
+
+            border:
+                4px solid var(--bg-light);
+        }
+
+        .step-item h3 {
+            font-size: 1.25rem;
+
+            font-weight: 700;
+
+            margin-bottom: 12px;
+        }
+
+        .step-item p {
+            font-size: 0.95rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.6;
+        }
+
+        /* =========================
+           PRICING
+        ========================= */
+
+        .pricing {
+            padding: 100px 0;
+
+            background:
+                var(--bg-white);
+        }
+
+        .pricing-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(280px, 420px);
+
+            justify-content: center;
+        }
+
+        .pricing-card {
+            padding: 40px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #EFF6FF 0%,
+                    var(--bg-light) 100%
+                );
+
+            border:
+                2px solid var(--primary);
+
+            border-radius:
+                var(--radius-lg);
+
+            text-align: center;
+
+            box-shadow:
+                var(--shadow-lg);
+
+            position: relative;
+        }
+
+        .pricing-badge {
+            position: absolute;
+
+            top: -14px;
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            padding:
+                6px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--secondary),
+                    var(--secondary-dark)
+                );
+
+            border-radius: 50px;
+
+            font-size: 0.8rem;
+
+            font-weight: 700;
+
+            color: white;
+
+            white-space: nowrap;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.3rem;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+
+            font-weight: 800;
+
+            color:
+                var(--primary);
+
+            margin-bottom: 8px;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+
+            font-weight: 500;
+
+            color:
+                var(--text-secondary);
+        }
+
+        .pricing-period {
+            font-size: 0.9rem;
+
+            color:
+                var(--text-tertiary);
+
+            margin-bottom: 24px;
+        }
+
+        .pricing-features {
+            list-style: none;
+
+            text-align: left;
+
+            margin-bottom: 32px;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+
+            font-size: 0.95rem;
+
+            color:
+                var(--text-secondary);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .pricing-features li::before {
+            content: "✓";
+
+            color:
+                var(--accent);
+
+            font-weight: 700;
+
+            font-size: 1.1rem;
+        }
+
+        .pricing-note {
+            margin-top: 16px;
+
+            font-size: 0.8rem;
+
+            color:
+                var(--text-tertiary);
+        }
+
+        /* =========================
+           WHY LAUNDRY28
+        ========================= */
+
+        .testimonials {
+            padding: 100px 0;
+
+            background:
+                var(--bg-light);
+        }
+
+        .testimonials-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 24px;
+        }
+
+        .testimonial-card {
+            padding: 32px;
+
+            background:
+                var(--bg-white);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius-lg);
+
+            transition:
+                all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            box-shadow:
+                var(--shadow-lg);
+        }
+
+        .testimonial-stars {
+            font-size: 1.8rem;
+
+            margin-bottom: 16px;
+        }
+
+        .testimonial-text {
+            font-size: 0.95rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.7;
+
+            margin-bottom: 20px;
+        }
+
+        .testimonial-author {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            font-size: 1.2rem;
+
+            font-weight: 700;
+
+            flex-shrink: 0;
+        }
+
+        .testimonial-name {
+            font-size: 0.95rem;
+
+            font-weight: 600;
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+
+            color:
+                var(--text-tertiary);
+        }
+
+        /* =========================
+           FAQ
+        ========================= */
+
+        .faq {
+            padding: 100px 0;
+
+            background:
+                var(--bg-white);
+        }
+
+        .faq-list {
+            max-width: 700px;
+
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius-md);
+
+            margin-bottom: 12px;
+
+            overflow: hidden;
+
+            transition:
+                all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color:
+                var(--primary-light);
+        }
+
+        .faq-question {
+            padding: 20px 24px;
+
+            background:
+                var(--bg-light);
+
+            cursor: pointer;
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            font-size: 1rem;
+
+            font-weight: 600;
+
+            transition:
+                all 0.3s ease;
+
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            background:
+                #EFF6FF;
+        }
+
+        .faq-toggle {
+            font-size: 1.5rem;
+
+            color:
+                var(--primary);
+
+            transition:
+                transform 0.3s ease;
+
+            flex-shrink: 0;
+
+            margin-left: 16px;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform:
+                rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+
+            overflow: hidden;
+
+            transition:
+                max-height 0.3s ease,
+                padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 400px;
+
+            padding:
+                0 24px 20px;
+        }
+
+        .faq-answer p {
+            font-size: 0.95rem;
+
+            color:
+                var(--text-secondary);
+
+            line-height: 1.7;
+        }
+
+        /* =========================
+           CTA
+        ========================= */
+
+        .cta {
+            padding: 100px 0;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary) 0%,
+                    var(--primary-dark) 100%
+                );
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: "";
+
+            position: absolute;
+
+            top: -50%;
+            right: -20%;
+
+            width: 500px;
+            height: 500px;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    transparent 70%
+                );
+
+            border-radius: 50%;
+        }
+
+        .cta .container {
+            text-align: center;
+
+            position: relative;
+
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+
+            font-weight: 800;
+
+            color: white;
+
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            font-size: 1.15rem;
+
+            color:
+                rgba(255, 255, 255, 0.85);
+
+            margin-bottom: 32px;
+
+            max-width: 600px;
+
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            padding:
+                60px 0 30px;
+
+            background:
+                var(--bg-dark);
+
+            color:
+                rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-grid {
+            display: grid;
+
+            grid-template-columns:
+                2fr 1fr 1fr 1fr;
+
+            gap: 40px;
+
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {
+            font-size: 1.5rem;
+
+            font-weight: 800;
+
+            color: white;
+
+            margin-bottom: 12px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .footer-brand .logo {
+            font-size: 1.8rem;
+        }
+
+        .footer-description {
+            font-size: 0.9rem;
+
+            line-height: 1.7;
+
+            margin-bottom: 20px;
+        }
+
+        .footer-social {
+            display: flex;
+
+            gap: 12px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+
+            background:
+                rgba(255, 255, 255, 0.1);
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 1.1rem;
+
+            transition:
+                all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background:
+                var(--primary);
+
+            transform:
+                translateY(-2px);
+        }
+
+        .footer-column h4 {
+            font-size: 1rem;
+
+            font-weight: 700;
+
+            color: white;
+
+            margin-bottom: 16px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            font-size: 0.9rem;
+
+            transition:
+                color 0.3s ease;
+        }
+
+        .footer-column ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding-top: 30px;
+
+            border-top:
+                1px solid
+                rgba(255, 255, 255, 0.1);
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            font-size: 0.85rem;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+
+            gap: 24px;
+        }
+
+        .footer-bottom-links a:hover {
+            color: white;
+        }
+
+        /* =========================
+           TABLET
+        ========================= */
+
         @media (max-width: 1024px) {
-            .hero h1 { font-size: 2.8rem; }
-            .features-grid, .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
-            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .features-grid,
+            .testimonials-grid,
+            .problem-grid,
+            .solution-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .benefits-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .customer-flow,
+            .chain-grid {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .navbar-menu {
+                gap: 18px;
+            }
+
+            .navbar-cta .btn {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
         }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
         @media (max-width: 768px) {
-            .navbar-menu, .navbar-cta { display: none; }
-            .mobile-menu-btn { display: block; }
-            .hero .container { grid-template-columns: 1fr; text-align: center; }
-            .hero h1 { font-size: 2.2rem; }
-            .hero-buttons { justify-content: center; }
-            .hero-stats { justify-content: center; }
-            .hero-visual { order: -1; }
-            .phone-mockup { width: 220px; height: 440px; }
-            .features-grid, .steps-grid, .testimonials-grid { grid-template-columns: 1fr; }
-            .steps-grid::before { display: none; }
-            .pricing-grid { grid-template-columns: 1fr; }
-            .pricing-card.popular { transform: scale(1); }
-            .section-title { font-size: 2rem; }
-            .cta h2 { font-size: 2rem; }
-            .footer-grid { grid-template-columns: 1fr; }
-            .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+            :root {
+                --promo-height: 52px;
+                --navbar-height: 64px;
+            }
+
+            .container {
+                padding:
+                    0 20px;
+            }
+
+            .navbar-menu,
+            .navbar-cta {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .hero {
+                padding:
+                    calc(
+                        110px +
+                        var(--promo-height) +
+                        var(--navbar-height)
+                    )
+                    0
+                    60px;
+            }
+
+            .hero .container {
+                grid-template-columns: 1fr;
+
+                text-align: center;
+
+                gap: 40px;
+            }
+
+            .hero-content {
+                order: 1;
+            }
+
+            .hero-visual {
+                order: 0;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .phone-mockup {
+                width: 220px;
+                height: 440px;
+            }
+
+            .phone-screen .app-icon {
+                font-size: 3rem;
+            }
+
+            .features-grid,
+            .steps-grid,
+            .testimonials-grid,
+            .problem-grid,
+            .solution-grid,
+            .benefits-grid,
+            .customer-flow,
+            .chain-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid::before {
+                display: none;
+            }
+
+            .transformation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .transformation-arrow {
+                transform:
+                    rotate(90deg);
+
+                height: 40px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .cta h2 {
+                font-size: 2rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+
+                gap: 16px;
+
+                text-align: center;
+            }
+
+            .ad-banner {
+                font-size: 0.8rem;
+
+                line-height: 1.4;
+            }
+
+            .customer-intro h3 {
+                font-size: 1.5rem;
+            }
+
+            .customer-highlight {
+                padding: 26px 20px;
+            }
         }
+
+        /* =========================
+           SMALL MOBILE
+        ========================= */
+
         @media (max-width: 480px) {
-            .hero { padding: 120px 0 60px; }
-            .hero h1 { font-size: 1.8rem; }
-            .hero-description { font-size: 1rem; }
-            .hero-buttons { flex-direction: column; align-items: center; }
-            .btn-large { width: 100%; }
-            .hero-stats { flex-direction: column; gap: 16px; }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+
+                align-items: center;
+            }
+
+            .btn-large {
+                width: 100%;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+
+                gap: 16px;
+
+                align-items: center;
+            }
+
+            .stat-item {
+                text-align: center;
+            }
+
+            .feature-card,
+            .testimonial-card,
+            .pricing-card,
+            .problem-card,
+            .solution-card,
+            .before-card,
+            .after-card {
+                padding: 24px;
+            }
+
+            .footer-bottom-links {
+                flex-direction: column;
+
+                gap: 8px;
+            }
         }
-        .mobile-menu { display: none; position: fixed; top: 70px; left: 0; right: 0; background: white; padding: 24px; border-bottom: 1px solid var(--border); box-shadow: var(--shadow-lg); z-index: 999; }
-        .mobile-menu.active { display: block; }
-        .mobile-menu a { display: block; padding: 12px 0; font-size: 1rem; font-weight: 500; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
-        .mobile-menu a:last-child { border-bottom: none; }
-        .mobile-menu a:hover { color: var(--primary); }
-        .mobile-menu .btn { width: 100%; margin-top: 16px; }
+
+        /* =========================
+           REDUCED MOTION
+        ========================= */
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration:
+                    0.01ms !important;
+
+                animation-iteration-count:
+                    1 !important;
+
+                transition-duration:
+                    0.01ms !important;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="ad-banner"><strong>\ud83c\udf89 PROMO PELUNCURAN!</strong> Dapatkan <strong>3 bulan GRATIS</strong> Premium untuk pengguna baru! <a href="#harga">Klaim Sekarang \u2192</a></div>
-    <nav class="navbar" id="navbar"><div class="container"><a href="#" class="navbar-brand"><span class="logo">\ud83e\uddfa</span><span>Laundry28</span></a><ul class="navbar-menu"><li><a href="#fitur">Fitur</a></li><li><a href="#cara-kerja">Cara Kerja</a></li><li><a href="#harga">Harga</a></li><li><a href="#testimoni">Testimoni</a></li><li><a href="#faq">FAQ</a></li></ul><div class="navbar-cta"><a href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.0%2B1/app-release.apk" class="btn btn-primary"><span class="btn-icon">\u2b07\ufe0f</span> Download APK</a></div><button class="mobile-menu-btn" id="mobileMenuBtn">\u2630</button></div></nav>
-    <div class="mobile-menu" id="mobileMenu"><a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#harga">Harga</a><a href="#testimoni">Testimoni</a><a href="#faq">FAQ</a><a href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.0%2B1/app-release.apk" class="btn btn-primary" style="margin-top:16px;">\u2b07\ufe0f Download APK</a></div>
-    <section class="hero" id="hero"><div class="container"><div class="hero-content"><div class="hero-badge"><span class="dot"></span>Versi 1.0.0+1 tersedia</div><h1>Kelola Laundry <span class="highlight">Lebih Mudah</span> & Cepat</h1><p class="hero-description">Aplikasi manajemen laundry berbasis cloud #1 di Indonesia. Kelola pesanan, pelanggan, laporan keuangan, dan operasional harian dalam satu aplikasi.</p><div class="hero-buttons"><a href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.0%2B1/app-release.apk" class="btn btn-primary btn-large"><span class="btn-icon">\u2b07\ufe0f</span> Download Gratis</a><a href="#fitur" class="btn btn-secondary btn-large">Pelajari Fitur</a></div><div class="hero-stats"><div class="stat-item"><div class="stat-number">500+</div><div class="stat-label">Pengguna Aktif</div></div><div class="stat-item"><div class="stat-number">10K+</div><div class="stat-label">Pesanan Ditangani</div></div><div class="stat-item"><div class="stat-number">4.9\u2605</div><div class="stat-label">Rating Pengguna</div></div></div></div><div class="hero-visual"><div class="phone-mockup"><div class="phone-notch"></div><div class="phone-screen"><div class="app-icon">\ud83e\uddfa</div><h3>Laundry28</h3><p>Kelola Laundry Lebih Mudah</p><div style="margin-top:24px;font-size:0.8rem;opacity:0.7;"><div style="background:rgba(255,255,255,0.2);padding:8px 16px;border-radius:8px;margin-bottom:8px;">\ud83d\udce6 Pesanan Baru: 12</div><div style="background:rgba(255,255,255,0.2);padding:8px 16px;border-radius:8px;margin-bottom:8px;">\ud83d\udcb0 Pendapatan Hari Ini</div><div style="background:rgba(255,255,255,0.2);padding:8px 16px;border-radius:8px;">\ud83d\udcca Laporan Real-time</div></div></div></div></div></div></section>
-    <div class="ad-banner"><strong>\ud83d\udd12 Keamanan Terjamin!</strong> Data Anda dilindungi dengan enkripsi SSL & OAuth 2.0. <a href="#fitur">Lihat Detail \u2192</a></div>
-    <section class="features" id="fitur"><div class="container"><div class="section-header animate-on-scroll"><span class="section-label">\u2728 Fitur Unggulan</span><h2 class="section-title">Semua yang Anda Butuhkan</h2><p class="section-subtitle">Fitur lengkap untuk mengelola bisnis laundry Anda dengan lebih efisien dan profesional.</p></div><div class="features-grid"><div class="feature-card animate-on-scroll"><div class="feature-icon">\ud83d\udce6</div><h3>Order Management</h3><p>Kelola pesanan laundry dari penerimaan hingga penyelesaian. Tracking status real-time untuk setiap pesanan.</p></div><div class="feature-card animate-on-scroll"><div class="feature-icon">\ud83c\udfe2</div><h3>Multi-Laundry Support</h3><p>Kelola lebih dari satu cabang laundry dalam satu aplikasi. Data terpisah untuk setiap lokasi.</p></div><div class="feature-card animate-on-scroll"><div class="feature-icon">\ud83d\udcca</div><h3>Laporan Keuangan</h3><p>Laporan pendapatan, laba rugi, dan ringkasan operasional secara real-time. Ekspor ke PDF & CSV.</p></div><div class="feature-card animate-on-scroll"><div class="feature-icon">\ud83d\udd10</div><h3>Google OAuth 2.0</h3><p>Login aman menggunakan Google Account. Tidak perlu ingat password, lebih cepat dan lebih aman.</p></div><div class="feature-card animate-on-scroll"><div class="feature-icon">\ud83d\udc65</div><h3>Role-Based Access</h3><p>Pembagian hak akses berbasis role: Owner (akses penuh) dan Staff (akses terbatas sesuai tugas).</p></div><div class="feature-card animate-on-scroll"><div class="feature-icon">\u2601\ufe0f</div><h3>Cloud-Based</h3><p>Data tersimpan di cloud Supabase. Akses dari mana saja, kapan saja. Auto-sync antar perangkat.</p></div></div></div></section>
-    <section class="how-it-works" id="cara-kerja"><div class="container"><div class="section-header animate-on-scroll"><span class="section-label">\ud83d\ude80 Cara Kerja</span><h2 class="section-title">Mulai dalam 3 Langkah Mudah</h2><p class="section-subtitle">Tidak perlu setup ribet. Download, daftar, dan langsung kelola laundry Anda.</p></div><div class="steps-grid"><div class="step-item animate-on-scroll"><div class="step-number">1</div><h3>Download Aplikasi</h3><p>Download APK Laundry28 gratis dari halaman ini. Install di perangkat Android Anda.</p></div><div class="step-item animate-on-scroll"><div class="step-number">2</div><h3>Daftar & Login</h3><p>Buat akun dengan Google Sign-In atau email. Setup data laundry Anda dalam hitungan menit.</p></div><div class="step-item animate-on-scroll"><div class="step-number">3</div><h3>Mulai Kelola</h3><p>Tambahkan pesanan, kelola pelanggan, dan pantau laporan keuangan. Semua dalam satu aplikasi!</p></div></div></div></section>
-    <div class="ad-banner"><strong>\ud83d\udca1 Tips!</strong> Owner yang menggunakan Laundry28 bisa meningkatkan efisiensi operasional hingga <strong>40%</strong>. <a href="#harga">Coba Sekarang \u2192</a></div>
-    <section class="pricing" id="harga"><div class="container"><div class="section-header animate-on-scroll"><span class="section-label">\ud83d\udcb0 Harga</span><h2 class="section-title">Pilih Paket yang Sesuai</h2><p class="section-subtitle">Mulai gratis, upgrade kapan saja sesuai kebutuhan bisnis Anda.</p></div><div class="pricing-grid"><div class="pricing-card animate-on-scroll"><h3>Gratis</h3><div class="pricing-price">Rp 0<span>/bln</span></div><div class="pricing-period">Selamanya gratis</div><ul class="pricing-features"><li>1 Laundry</li><li>Order Management</li><li>Data Pelanggan</li><li>Laporan Dasar</li><li>Google OAuth Login</li><li>1 Staff Account</li></ul><a href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.0%2B1/app-release.apk" class="btn btn-secondary" style="width:100%;">Download Gratis</a></div><div class="pricing-card popular animate-on-scroll"><div class="pricing-badge">\u2b50 PALING POPULER</div><h3>Premium</h3><div class="pricing-price">Rp 49K<span>/bln</span></div><div class="pricing-period">Hemat 40% untuk paket tahunan</div><ul class="pricing-features"><li>Unlimited Laundry</li><li>Semua Fitur Gratis</li><li>Laporan Lanjutan</li><li>Ekspor PDF & CSV</li><li>Unlimited Staff</li><li>Priority Support</li><li>Backup Otomatis</li></ul><a href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.0%2B1/app-release.apk" class="btn btn-primary" style="width:100%;">Download & Upgrade</a></div></div></div></section>
-    <section class="testimonials" id="testimoni"><div class="container"><div class="section-header animate-on-scroll"><span class="section-label">\ud83d\udcac Testimoni</span><h2 class="section-title">Apa Kata Pengguna Kami</h2><p class="section-subtitle">Ribuan pemilik laundry sudah merasakan manfaat Laundry28.</p></div><div class="testimonials-grid"><div class="testimonial-card animate-on-scroll"><div class="testimonial-stars">\u2605\u2605\u2605\u2605\u2605</div><p class="testimonial-text">"Laundry28 mengubah cara saya mengelola laundry. Dulu pakai buku catatan, sekarang semua digital dan rapi. Laporan keuangannya sangat membantu!"</p><div class="testimonial-author"><div class="testimonial-avatar">B</div><div><div class="testimonial-name">Bu Sari</div><div class="testimonial-role">Pemilik Laundry Bersih, Jakarta</div></div></div></div><div class="testimonial-card animate-on-scroll"><div class="testimonial-stars">\u2605\u2605\u2605\u2605\u2605</div><p class="testimonial-text">"Fitur multi-laundry sangat berguna karena saya punya 3 cabang. Semua data bisa saya pantau dari satu aplikasi. Recommended!"</p><div class="testimonial-author"><div class="testimonial-avatar">A</div><div><div class="testimonial-name">Pak Ahmad</div><div class="testimonial-role">Pemilik 3 Cabang, Bandung</div></div></div></div><div class="testimonial-card animate-on-scroll"><div class="testimonial-stars">\u2605\u2605\u2605\u2605\u2605</div><p class="testimonial-text">"Staff saya jadi lebih mudah kerja. Fitur role-based access bikin saya bisa kasih akses terbatas tanpa khawatir data bocor."</p><div class="testimonial-author"><div class="testimonial-avatar">M</div><div><div class="testimonial-name">Mbak Dina</div><div class="testimonial-role">Owner Clean Laundry, Surabaya</div></div></div></div></div></div></section>
-    <div class="ad-banner"><strong>\ud83c\udf81 BONUS!</strong> Setiap pengguna Premium mendapat <strong>template laporan keuangan gratis</strong> + <strong>video tutorial eksklusif</strong>. <a href="#harga">Dapatkan Sekarang \u2192</a></div>
-    <section class="faq" id="faq"><div class="container"><div class="section-header animate-on-scroll"><span class="section-label">\u2753 FAQ</span><h2 class="section-title">Pertanyaan yang Sering Ditanyakan</h2><p class="section-subtitle">Temukan jawaban untuk pertanyaan umum tentang Laundry28.</p></div><div class="faq-list"><div class="faq-item animate-on-scroll"><div class="faq-question"><span>Apakah Laundry28 gratis?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Ya! Paket Gratis tersedia selamanya dengan fitur dasar lengkap termasuk Order Management, data pelanggan, dan laporan dasar.</p></div></div><div class="faq-item animate-on-scroll"><div class="faq-question"><span>Apakah data saya aman?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Sangat aman! Laundry28 menggunakan enkripsi SSL/TLS, enkripsi at-rest di database, dan autentikasi Google OAuth 2.0.</p></div></div><div class="faq-item animate-on-scroll"><div class="faq-question"><span>Bisa digunakan offline?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Laundry28 adalah aplikasi cloud-based yang memerlukan koneksi internet untuk sinkronisasi data.</p></div></div><div class="faq-item animate-on-scroll"><div class="faq-question"><span>Bagaimana cara upgrade ke Premium?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Download aplikasi, daftar akun Owner, buka menu Subscription di pengaturan. Pilih Premium dan selesaikan pembayaran.</p></div></div><div class="faq-item animate-on-scroll"><div class="faq-question"><span>Apakah bisa untuk laundry dry clean?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Tentu! Laundry28 mendukung berbagai jenis layanan laundry termasuk cuci reguler, setrika, dry clean, dan layanan khusus lainnya.</p></div></div></div></div></section>
-    <section class="cta"><div class="container animate-on-scroll"><h2>Siap Mulai Kelola Laundry Anda?</h2><p>Bergabung dengan ratusan pemilik laundry yang sudah menggunakan Laundry28. Download sekarang, gratis!</p><a href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.0%2B1/app-release.apk" class="btn btn-white btn-large"><span class="btn-icon">\u2b07\ufe0f</span> Download APK Sekarang</a></div></section>
-    <footer class="footer"><div class="container"><div class="footer-grid"><div><div class="footer-brand"><span class="logo">\ud83e\uddfa</span> Laundry28</div><p class="footer-description">Aplikasi manajemen laundry berbasis cloud #1 di Indonesia. Dikembangkan oleh Star28 Tech.</p><div class="footer-social"><a href="#" title="Instagram">\ud83d\udcf7</a><a href="#" title="WhatsApp">\ud83d\udcac</a><a href="#" title="Email">\ud83d\udce7</a></div></div><div class="footer-column"><h4>Produk</h4><ul><li><a href="#fitur">Fitur</a></li><li><a href="#harga">Harga</a></li><li><a href="#testimoni">Testimoni</a></li><li><a href="#faq">FAQ</a></li></ul></div><div class="footer-column"><h4>Download</h4><ul><li><a href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.0%2B1/app-release.apk">Download APK</a></li><li><a href="https://github.com/rudi-prog/laundry28-updates/releases">Riwayat Release</a></li><li><a href="#">Changelog</a></li></ul></div><div class="footer-column"><h4>Legal</h4><ul><li><a href="/privacy-policy.html">Kebijakan Privasi</a></li><li><a href="/terms-of-service.html">Syarat & Ketentuan</a></li><li><a href="mailto:info@star28tech.com">Hubungi Kami</a></li></ul></div></div><div class="footer-bottom"><p>\u00a9 2026 Laundry28 by Star28 Tech. All rights reserved.</p><div class="footer-bottom-links"><a href="/privacy-policy.html">Privacy Policy</a><a href="/terms-of-service.html">Terms of Service</a></div></div></div></footer>
+
+    <!-- =========================
+         PROMO
+    ========================= -->
+
+    <div class="ad-banner">
+        <strong>🎉 LAUNDRY28 GRATIS</strong>
+
+        <span>
+            Kelola laundry tanpa biaya langganan.
+        </span>
+
+        <a href="#harga">
+            Lihat →
+        </a>
+    </div>
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav class="navbar" id="navbar">
+        <div class="container">
+
+            <a href="#hero" class="navbar-brand">
+                <span class="logo">🧺</span>
+                <span>Laundry28</span>
+            </a>
+
+            <ul class="navbar-menu">
+
+                <li>
+                    <a href="#masalah">
+                        Masalah Owner
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#solusi">
+                        Solusi
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#pelanggan">
+                        Pelanggan
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#fitur">
+                        Fitur
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#harga">
+                        Harga
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#faq">
+                        FAQ
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="navbar-cta">
+
+                <a
+                    data-download="true"
+                    href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.1/app-release.apk"
+                    class="btn btn-primary"
+                >
+                    <span class="btn-icon">⬇️</span>
+                    Download Gratis
+                </a>
+
+            </div>
+
+            <button
+                class="mobile-menu-btn"
+                id="mobileMenuBtn"
+                type="button"
+                aria-label="Buka menu"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- =========================
+         MOBILE MENU
+    ========================= -->
+
+    <div
+        class="mobile-menu"
+        id="mobileMenu"
+    >
+
+        <a href="#masalah">
+            Masalah Owner
+        </a>
+
+        <a href="#solusi">
+            Solusi
+        </a>
+
+        <a href="#pelanggan">
+            Pelanggan
+        </a>
+
+        <a href="#fitur">
+            Fitur
+        </a>
+
+        <a href="#harga">
+            Harga
+        </a>
+
+        <a href="#faq">
+            FAQ
+        </a>
+
+        <a
+            data-download="true"
+            href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.1/app-release.apk"
+            class="btn btn-primary"
+        >
+            ⬇️ Download Gratis
+        </a>
+
+    </div>
+
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <section
+        class="hero"
+        id="hero"
+    >
+
+        <div class="container">
+
+            <div class="hero-content">
+
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    Dibuat untuk kebutuhan owner laundry
+                </div>
+
+                <h1>
+                    Laundry Anda
+                    <span class="highlight">
+                        Ramai,
+                    </span>
+                    Tapi Masih Sulit Dikendalikan?
+                </h1>
+
+                <p class="hero-description">
+                    Ketika order semakin banyak, pencatatan manual,
+                    chat yang menumpuk, laporan yang tidak jelas,
+                    dan ketergantungan pada karyawan bisa membuat
+                    owner semakin sulit mengontrol bisnisnya.
+                    <strong>
+                        Laundry28 hadir untuk membantu menyelesaikan masalah itu.
+                    </strong>
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a
+                        data-download="true"
+                        href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.1/app-release.apk"
+                        class="btn btn-primary btn-large"
+                    >
+                        <span class="btn-icon">⬇️</span>
+                        Coba Laundry28 Gratis
+                    </a>
+
+                    <a
+                        href="#masalah"
+                        class="btn btn-secondary btn-large"
+                    >
+                        Lihat Masalahnya
+                    </a>
+
+                </div>
+
+                <div class="hero-stats">
+
+                    <div class="stat-item">
+                        <div class="stat-number">
+                            🧺
+                        </div>
+
+                        <div class="stat-label">
+                            Kelola Order
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-number">
+                            📊
+                        </div>
+
+                        <div class="stat-label">
+                            Pantau Bisnis
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-number">
+                            🆓
+                        </div>
+
+                        <div class="stat-label">
+                            Gratis
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="hero-visual">
+
+                <div class="phone-mockup">
+
+                    <div class="phone-notch"></div>
+
+                    <div class="phone-screen">
+
+                        <div class="app-icon">
+                            🧺
+                        </div>
+
+                        <h3>
+                            Laundry28
+                        </h3>
+
+                        <p>
+                            Kontrol laundry dari satu aplikasi
+                        </p>
+
+                        <div
+                            style="
+                                margin-top: 24px;
+                                width: 100%;
+                            "
+                        >
+
+                            <div class="mockup-stat">
+                                📦 Pesanan Baru: 12
+                            </div>
+
+                            <div class="mockup-stat">
+                                💰 Pendapatan Hari Ini
+                            </div>
+
+                            <div class="mockup-stat">
+                                📍 Status Laundry Terpantau
+                            </div>
+
+                            <div
+                                class="mockup-stat"
+                                style="margin-bottom: 0;"
+                            >
+                                😊 Pelanggan Lebih Nyaman
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         PROBLEM
+    ========================= -->
+
+    <section
+        class="owner-problem"
+        id="masalah"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    ⚠️ Masalah Owner
+                </span>
+
+                <h2 class="section-title">
+                    Yang Membuat Laundry Terasa Berat Bukan Selalu Jumlah Ordernya
+                </h2>
+
+                <p class="section-subtitle">
+                    Kadang masalahnya justru ada pada cara laundry tersebut dikelola.
+                </p>
+
+            </div>
+
+            <div class="problem-intro animate-on-scroll">
+
+                <h3>
+                    Pernah mengalami hal seperti ini?
+                </h3>
+
+                <p>
+                    Semakin ramai laundry, semakin banyak hal yang harus
+                    diperiksa. Dan kalau semuanya masih dilakukan manual,
+                    waktu owner ikut habis di dalam operasional.
+                </p>
+
+            </div>
+
+            <div class="problem-grid">
+
+                <div class="problem-card animate-on-scroll">
+
+                    <div class="problem-icon">
+                        📒
+                    </div>
+
+                    <h3>
+                        Masih Mengandalkan Catatan Manual
+                    </h3>
+
+                    <p>
+                        Order dicatat di buku, nota, atau tempat berbeda.
+                        Saat ingin mencari transaksi lama, owner harus
+                        membongkar catatan satu per satu.
+                    </p>
+
+                </div>
+
+                <div class="problem-card animate-on-scroll">
+
+                    <div class="problem-icon">
+                        💸
+                    </div>
+
+                    <h3>
+                        Tahu Laundry Ramai, Tapi Tidak Tahu Angkanya
+                    </h3>
+
+                    <p>
+                        Banyak order belum tentu berarti owner tahu
+                        berapa pendapatan hari ini, berapa transaksi
+                        yang selesai, dan bagaimana kondisi bisnis.
+                    </p>
+
+                </div>
+
+                <div class="problem-card animate-on-scroll">
+
+                    <div class="problem-icon">
+                        📱
+                    </div>
+
+                    <h3>
+                        WhatsApp Penuh dengan Urusan Laundry
+                    </h3>
+
+                    <p>
+                        Pertanyaan pelanggan, status cucian, konfirmasi,
+                        dan komunikasi operasional bercampur dengan
+                        percakapan lainnya.
+                    </p>
+
+                </div>
+
+                <div class="problem-card animate-on-scroll">
+
+                    <div class="problem-icon">
+                        👨‍🔧
+                    </div>
+
+                    <h3>
+                        Sulit Mengontrol Karyawan
+                    </h3>
+
+                    <p>
+                        Ketika owner tidak berada di lokasi,
+                        informasi operasional bisa menjadi sulit
+                        dipantau tanpa sistem yang jelas.
+                    </p>
+
+                </div>
+
+                <div class="problem-card animate-on-scroll">
+
+                    <div class="problem-icon">
+                        🧾
+                    </div>
+
+                    <h3>
+                        Salah Catat Bisa Menjadi Masalah
+                    </h3>
+
+                    <p>
+                        Kesalahan data, status order yang terlewat,
+                        atau transaksi yang tidak tercatat dapat
+                        membuat pekerjaan semakin panjang.
+                    </p>
+
+                </div>
+
+                <div class="problem-card animate-on-scroll">
+
+                    <div class="problem-icon">
+                        ⏰
+                    </div>
+
+                    <h3>
+                        Owner Terjebak di Operasional
+                    </h3>
+
+                    <p>
+                        Seharusnya fokus mengembangkan bisnis,
+                        tetapi waktu justru habis untuk mengecek
+                        pekerjaan yang seharusnya bisa lebih terstruktur.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="problem-loss animate-on-scroll">
+
+                <strong>
+                    ⚠️ Masalah kecil yang berulang bisa menjadi biaya besar.
+                </strong>
+
+                <span>
+                    Waktu owner terbuang, pekerjaan bertambah,
+                    kontrol berkurang, dan keputusan bisnis menjadi lebih sulit.
+                    Dampaknya juga bisa terasa sampai ke pelanggan.
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         TRANSFORMATION
+    ========================= -->
+
+    <section
+        class="transformation"
+        id="perubahan"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    🔄 Perubahan
+                </span>
+
+                <h2 class="section-title">
+                    Dari Sibuk Mengurus Laundry Menjadi Mengontrol Laundry
+                </h2>
+
+                <p class="section-subtitle">
+                    Tujuan Laundry28 bukan membuat owner semakin sibuk
+                    membuka aplikasi. Justru sebaliknya.
+                </p>
+
+            </div>
+
+            <div class="transformation-grid">
+
+                <div class="before-card animate-on-scroll">
+
+                    <span
+                        class="transformation-label before-label"
+                    >
+                        ❌ SEBELUM
+                    </span>
+
+                    <h3>
+                        Owner harus mengejar informasi
+                    </h3>
+
+                    <ul class="transformation-list">
+
+                        <li>
+                            Mencari catatan order
+                        </li>
+
+                        <li>
+                            Menghitung pendapatan secara manual
+                        </li>
+
+                        <li>
+                            Bertanya kepada karyawan
+                        </li>
+
+                        <li>
+                            Mencari percakapan pelanggan
+                        </li>
+
+                        <li>
+                            Sulit mengetahui kondisi laundry dengan cepat
+                        </li>
+
+                        <li>
+                            Pelanggan harus menunggu jawaban untuk mengetahui status
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="transformation-arrow">
+                    →
+                </div>
+
+                <div class="after-card animate-on-scroll">
+
+                    <span
+                        class="transformation-label after-label"
+                    >
+                        ✓ DENGAN LAUNDRY28
+                    </span>
+
+                    <h3>
+                        Informasi lebih terpusat dan mudah dipantau
+                    </h3>
+
+                    <ul class="transformation-list">
+
+                        <li>
+                            Order tercatat dalam sistem
+                        </li>
+
+                        <li>
+                            Pendapatan lebih mudah dipantau
+                        </li>
+
+                        <li>
+                            Hak akses owner dan staff dapat dibedakan
+                        </li>
+
+                        <li>
+                            Status pekerjaan lebih terstruktur
+                        </li>
+
+                        <li>
+                            Owner memiliki alat untuk mengontrol operasional
+                        </li>
+
+                        <li>
+                            Pelanggan dapat mengetahui status laundry tanpa harus menunggu balasan WhatsApp
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         OWNER BENEFITS
+    ========================= -->
+
+    <section
+        class="benefits"
+        id="keuntungan"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    💰 Keuntungan untuk Owner
+                </span>
+
+                <h2 class="section-title">
+                    Yang Anda Dapatkan Bukan Sekadar Aplikasi
+                </h2>
+
+                <p class="section-subtitle">
+                    Nilai sebenarnya adalah waktu, kontrol, dan
+                    informasi yang lebih baik untuk mengambil keputusan.
+                </p>
+
+            </div>
+
+            <div class="benefits-grid">
+
+                <div class="benefit-card animate-on-scroll">
+
+                    <div class="benefit-icon">
+                        ⏱️
+                    </div>
+
+                    <h3>
+                        Hemat Waktu
+                    </h3>
+
+                    <p>
+                        Kurangi pekerjaan berulang dalam pencatatan
+                        dan pengecekan operasional.
+                    </p>
+
+                </div>
+
+                <div class="benefit-card animate-on-scroll">
+
+                    <div class="benefit-icon">
+                        👁️
+                    </div>
+
+                    <h3>
+                        Lebih Mudah Mengontrol
+                    </h3>
+
+                    <p>
+                        Informasi laundry lebih terstruktur sehingga
+                        owner lebih mudah melihat kondisi bisnis.
+                    </p>
+
+                </div>
+
+                <div class="benefit-card animate-on-scroll">
+
+                    <div class="benefit-icon">
+                        📈
+                    </div>
+
+                    <h3>
+                        Lebih Mudah Berkembang
+                    </h3>
+
+                    <p>
+                        Ketika operasional lebih tertata, owner bisa
+                        lebih fokus pada pelanggan dan perkembangan usaha.
+                    </p>
+
+                </div>
+
+                <div class="benefit-card animate-on-scroll">
+
+                    <div class="benefit-icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Keputusan Lebih Jelas
+                    </h3>
+
+                    <p>
+                        Data operasional membantu owner memahami
+                        apa yang sedang terjadi di laundry.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         CUSTOMER EXPERIENCE
+    ========================= -->
+
+    <section
+        class="customer-experience"
+        id="pelanggan"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    😊 Dampaknya ke Pelanggan
+                </span>
+
+                <h2 class="section-title">
+                    Operasional Lancar, Pelanggan Ikut Senang
+                </h2>
+
+                <p class="section-subtitle">
+                    Ketika pekerjaan di belakang layar lebih tertata,
+                    pelanggan akan merasakan perbedaannya di depan.
+                </p>
+
+            </div>
+
+            <div class="customer-intro animate-on-scroll">
+
+                <h3>
+                    Pelayanan yang baik dimulai dari operasional yang baik.
+                </h3>
+
+                <p>
+                    Ketika order tidak lagi tercecer, status pekerjaan
+                    lebih jelas, dan staff memiliki alur kerja yang lebih
+                    teratur, pelayanan kepada pelanggan juga menjadi
+                    lebih mudah dan konsisten.
+                </p>
+
+            </div>
+
+            <div class="customer-flow">
+
+                <div class="customer-flow-card animate-on-scroll">
+
+                    <div class="customer-flow-number">
+                        1
+                    </div>
+
+                    <div class="customer-flow-icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Order Lebih Terpantau
+                    </h3>
+
+                    <p>
+                        Pesanan tercatat dan memiliki status yang jelas.
+                        Staff lebih mudah mengetahui apa yang harus
+                        dikerjakan berikutnya.
+                    </p>
+
+                </div>
+
+                <div class="customer-flow-card animate-on-scroll">
+
+                    <div class="customer-flow-number">
+                        2
+                    </div>
+
+                    <div class="customer-flow-icon">
+                        📍
+                    </div>
+
+                    <h3>
+                        Pelanggan Bisa Tracking
+                    </h3>
+
+                    <p>
+                        Pelanggan tidak harus terus menunggu balasan
+                        WhatsApp hanya untuk mengetahui apakah cucian
+                        masih diproses atau sudah selesai.
+                    </p>
+
+                </div>
+
+                <div class="customer-flow-card animate-on-scroll">
+
+                    <div class="customer-flow-number">
+                        3
+                    </div>
+
+                    <div class="customer-flow-icon">
+                        😊
+                    </div>
+
+                    <h3>
+                        Pengalaman Lebih Nyaman
+                    </h3>
+
+                    <p>
+                        Informasi lebih jelas, pelayanan lebih terarah,
+                        dan pelanggan dapat memperoleh kepastian
+                        mengenai status laundry mereka.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="customer-highlight animate-on-scroll">
+
+                <h3>
+                    💬 Tidak Semua Pertanyaan Pelanggan Harus Dijawab Lewat WhatsApp
+                </h3>
+
+                <p>
+                    Dengan tracking status laundry,
+                    pelanggan dapat mengetahui perkembangan pesanannya
+                    tanpa harus menunggu owner atau staff membalas chat.
+                    <strong>
+                        Staff bisa lebih fokus mengerjakan laundry,
+                        sementara pelanggan tetap mendapatkan informasi.
+                    </strong>
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         BUSINESS CHAIN
+    ========================= -->
+
+    <section
+        class="business-chain"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    🔗 Efek Berantai
+                </span>
+
+                <h2 class="section-title">
+                    Owner Lebih Terkontrol. Staff Lebih Terarah. Pelanggan Lebih Puas.
+                </h2>
+
+                <p class="section-subtitle">
+                    Satu perbaikan dalam operasional dapat memberikan
+                    dampak ke seluruh pengalaman bisnis.
+                </p>
+
+            </div>
+
+            <div class="chain-grid">
+
+                <div class="chain-card animate-on-scroll">
+
+                    <div class="chain-icon">
+                        👨‍💼
+                    </div>
+
+                    <h3>
+                        Owner
+                    </h3>
+
+                    <p>
+                        Lebih mudah melihat kondisi laundry,
+                        memantau operasional, dan menggunakan waktu
+                        untuk mengembangkan usaha.
+                    </p>
+
+                </div>
+
+                <div class="chain-card animate-on-scroll">
+
+                    <div class="chain-icon">
+                        👨‍🔧
+                    </div>
+
+                    <h3>
+                        Staff
+                    </h3>
+
+                    <p>
+                        Memiliki alur kerja dan informasi order
+                        yang lebih jelas sehingga pekerjaan dapat
+                        dilakukan dengan lebih terarah.
+                    </p>
+
+                </div>
+
+                <div class="chain-card animate-on-scroll">
+
+                    <div class="chain-icon">
+                        😊
+                    </div>
+
+                    <h3>
+                        Pelanggan
+                    </h3>
+
+                    <p>
+                        Mendapat pelayanan yang lebih nyaman,
+                        informasi status yang lebih jelas,
+                        dan tidak perlu selalu menunggu balasan WhatsApp.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         SOLUTION
+    ========================= -->
+
+    <section
+        class="solution"
+        id="solusi"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    💡 Solusi Laundry28
+                </span>
+
+                <h2 class="section-title">
+                    Satu Sistem untuk Membantu Owner Mengendalikan Laundry
+                </h2>
+
+                <p class="section-subtitle">
+                    Laundry28 mengubah pekerjaan yang sebelumnya
+                    tersebar menjadi lebih terorganisir dalam satu aplikasi.
+                </p>
+
+            </div>
+
+            <div class="solution-grid">
+
+                <div class="solution-card animate-on-scroll">
+
+                    <div class="solution-icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Order Lebih Teratur
+                    </h3>
+
+                    <p>
+                        Pesanan dari penerimaan sampai selesai
+                        dapat dikelola melalui sistem sehingga
+                        status pekerjaan lebih mudah diketahui.
+                    </p>
+
+                </div>
+
+                <div class="solution-card animate-on-scroll">
+
+                    <div class="solution-icon">
+                        📍
+                    </div>
+
+                    <h3>
+                        Tracking Status Laundry
+                    </h3>
+
+                    <p>
+                        Status laundry dapat ditampilkan dengan jelas
+                        sehingga pelanggan tidak harus selalu menghubungi
+                        laundry hanya untuk menanyakan perkembangan cucian.
+                    </p>
+
+                </div>
+
+                <div class="solution-card animate-on-scroll">
+
+                    <div class="solution-icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        Owner & Staff Punya Peran Jelas
+                    </h3>
+
+                    <p>
+                        Pisahkan akses owner dan staff sesuai kebutuhan
+                        agar operasional dapat berjalan tanpa memberikan
+                        seluruh kontrol kepada semua pengguna.
+                    </p>
+
+                </div>
+
+                <div class="solution-card animate-on-scroll">
+
+                    <div class="solution-icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Kondisi Bisnis Lebih Mudah Dipantau
+                    </h3>
+
+                    <p>
+                        Gunakan data order dan laporan untuk membantu
+                        owner memahami pendapatan dan aktivitas laundry.
+                    </p>
+
+                </div>
+
+                <div class="solution-card animate-on-scroll">
+
+                    <div class="solution-icon">
+                        ☁️
+                    </div>
+
+                    <h3>
+                        Data Tersimpan di Cloud
+                    </h3>
+
+                    <p>
+                        Data laundry tersimpan pada layanan cloud
+                        sehingga tidak bergantung pada satu perangkat saja.
+                    </p>
+
+                </div>
+
+                <div class="solution-card animate-on-scroll">
+
+                    <div class="solution-icon">
+                        🏢
+                    </div>
+
+                    <h3>
+                        Siap untuk Laundry yang Berkembang
+                    </h3>
+
+                    <p>
+                        Dukungan multi-laundry membantu owner yang
+                        memiliki atau berencana mengelola lebih dari
+                        satu lokasi usaha.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         FEATURES
+    ========================= -->
+
+    <section
+        class="features"
+        id="fitur"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    🛠️ Fitur
+                </span>
+
+                <h2 class="section-title">
+                    Fitur yang Dibuat untuk Menyelesaikan Masalah
+                </h2>
+
+                <p class="section-subtitle">
+                    Bukan sekadar daftar fitur.
+                    Setiap bagian dibuat untuk membantu pekerjaan
+                    operasional laundry menjadi lebih terstruktur.
+                </p>
+
+            </div>
+
+            <div class="features-grid">
+
+                <div class="feature-card animate-on-scroll">
+
+                    <div class="feature-icon">
+                        📦
+                    </div>
+
+                    <h3>
+                        Order Management
+                    </h3>
+
+                    <p>
+                        Kelola pesanan laundry dari penerimaan hingga
+                        penyelesaian dengan tracking status untuk
+                        membantu mengurangi pekerjaan pencatatan manual.
+                    </p>
+
+                </div>
+
+                <div class="feature-card animate-on-scroll">
+
+                    <div class="feature-icon">
+                        📍
+                    </div>
+
+                    <h3>
+                        Tracking Laundry
+                    </h3>
+
+                    <p>
+                        Berikan informasi status laundry kepada pelanggan
+                        sehingga mereka tidak harus selalu menunggu
+                        balasan WhatsApp untuk mengetahui perkembangan
+                        pesanannya.
+                    </p>
+
+                </div>
+
+                <div class="feature-card animate-on-scroll">
+
+                    <div class="feature-icon">
+                        🏢
+                    </div>
+
+                    <h3>
+                        Multi-Laundry Support
+                    </h3>
+
+                    <p>
+                        Kelola beberapa laundry dalam satu akun
+                        dengan data yang terpisah untuk setiap laundry.
+                    </p>
+
+                </div>
+
+                <div class="feature-card animate-on-scroll">
+
+                    <div class="feature-icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Laporan Keuangan
+                    </h3>
+
+                    <p>
+                        Lihat ringkasan pendapatan dan operasional
+                        untuk membantu owner memahami kondisi bisnis.
+                    </p>
+
+                </div>
+
+                <div class="feature-card animate-on-scroll">
+
+                    <div class="feature-icon">
+                        🔐
+                    </div>
+
+                    <h3>
+                        Google OAuth 2.0
+                    </h3>
+
+                    <p>
+                        Login menggunakan Google Account sehingga
+                        proses masuk aplikasi menjadi lebih praktis.
+                    </p>
+
+                </div>
+
+                <div class="feature-card animate-on-scroll">
+
+                    <div class="feature-icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        Role-Based Access
+                    </h3>
+
+                    <p>
+                        Owner dan staff dapat memiliki hak akses
+                        yang berbeda sesuai dengan kebutuhan operasional.
+                    </p>
+
+                </div>
+
+                <div class="feature-card animate-on-scroll">
+
+                    <div class="feature-icon">
+                        ☁️
+                    </div>
+
+                    <h3>
+                        Cloud-Based
+                    </h3>
+
+                    <p>
+                        Data tersimpan di cloud Supabase dan dapat
+                        disinkronkan antar perangkat dengan koneksi internet.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         HOW IT WORKS
+    ========================= -->
+
+    <section
+        class="how-it-works"
+        id="cara-kerja"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    🚀 Mulai
+                </span>
+
+                <h2 class="section-title">
+                    Tidak Perlu Mengubah Semuanya Sekaligus
+                </h2>
+
+                <p class="section-subtitle">
+                    Mulai dari mencatat order dan melihat kondisi
+                    laundry, kemudian gunakan fitur lainnya sesuai kebutuhan.
+                </p>
+
+            </div>
+
+            <div class="steps-grid">
+
+                <div class="step-item animate-on-scroll">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <h3>
+                        Download
+                    </h3>
+
+                    <p>
+                        Download Laundry28 secara gratis
+                        dan install di perangkat Android Anda.
+                    </p>
+
+                </div>
+
+                <div class="step-item animate-on-scroll">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <h3>
+                        Daftar & Setup
+                    </h3>
+
+                    <p>
+                        Buat akun dan masukkan informasi
+                        laundry Anda untuk mulai menggunakan sistem.
+                    </p>
+
+                </div>
+
+                <div class="step-item animate-on-scroll">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <h3>
+                        Mulai Kendalikan
+                    </h3>
+
+                    <p>
+                        Kelola order, pelanggan, staff, dan laporan
+                        dari satu aplikasi.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         PRICING
+    ========================= -->
+
+    <section
+        class="pricing"
+        id="harga"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    💰 Harga
+                </span>
+
+                <h2 class="section-title">
+                    Masalahnya Bisa Mahal. Laundry28 Tidak.
+                </h2>
+
+                <p class="section-subtitle">
+                    Laundry28 gratis untuk penggunaan dasar.
+                    Tidak ada biaya langganan untuk paket ini.
+                </p>
+
+            </div>
+
+            <div class="pricing-grid">
+
+                <div class="pricing-card animate-on-scroll">
+
+                    <div class="pricing-badge">
+                        GRATIS
+                    </div>
+
+                    <h3>
+                        Laundry28
+                    </h3>
+
+                    <div class="pricing-price">
+                        Rp 0
+                        <span>/bln</span>
+                    </div>
+
+                    <div class="pricing-period">
+                        Gratis untuk penggunaan dasar
+                    </div>
+
+                    <ul class="pricing-features">
+
+                        <li>
+                            1 Laundry
+                        </li>
+
+                        <li>
+                            Order Management
+                        </li>
+
+                        <li>
+                            Data Pelanggan
+                        </li>
+
+                        <li>
+                            Laporan Dasar
+                        </li>
+
+                        <li>
+                            Google OAuth Login
+                        </li>
+
+                        <li>
+                            1 Staff Account
+                        </li>
+
+                    </ul>
+
+                    <a
+                        data-download="true"
+                        href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.1/app-release.apk"
+                        class="btn btn-primary"
+                        style="width: 100%;"
+                    >
+                        ⬇️ Download Gratis
+                    </a>
+
+                    <div class="pricing-note">
+                        Coba dulu. Rasakan sendiri apakah Laundry28
+                        cocok untuk cara Anda mengelola laundry.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         WHY LAUNDRY28
+    ========================= -->
+
+    <section
+        class="testimonials"
+        id="testimoni"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    🎯 Kenapa Laundry28?
+                </span>
+
+                <h2 class="section-title">
+                    Dibuat dari Sudut Pandang Pengelolaan Laundry
+                </h2>
+
+                <p class="section-subtitle">
+                    Fokusnya bukan membuat aplikasi terlihat canggih,
+                    tetapi membantu pekerjaan owner menjadi lebih masuk akal.
+                </p>
+
+            </div>
+
+            <div class="testimonials-grid">
+
+                <div class="testimonial-card animate-on-scroll">
+
+                    <div class="testimonial-stars">
+                        🧠
+                    </div>
+
+                    <p class="testimonial-text">
+                        "Owner tidak seharusnya menghabiskan sebagian besar
+                        waktunya hanya untuk mencari tahu apa yang terjadi
+                        di laundry."
+                    </p>
+
+                    <div class="testimonial-author">
+
+                        <div class="testimonial-avatar">
+                            O
+                        </div>
+
+                        <div>
+
+                            <div class="testimonial-name">
+                                Fokus Owner
+                            </div>
+
+                            <div class="testimonial-role">
+                                Kontrol, bukan sekadar operasional
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="testimonial-card animate-on-scroll">
+
+                    <div class="testimonial-stars">
+                        📊
+                    </div>
+
+                    <p class="testimonial-text">
+                        "Semakin banyak order, semakin penting memiliki
+                        informasi yang terstruktur agar owner tidak
+                        mengambil keputusan hanya berdasarkan perkiraan."
+                    </p>
+
+                    <div class="testimonial-author">
+
+                        <div class="testimonial-avatar">
+                            D
+                        </div>
+
+                        <div>
+
+                            <div class="testimonial-name">
+                                Data Operasional
+                            </div>
+
+                            <div class="testimonial-role">
+                                Membantu melihat kondisi bisnis
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="testimonial-card animate-on-scroll">
+
+                    <div class="testimonial-stars">
+                        😊
+                    </div>
+
+                    <p class="testimonial-text">
+                        "Ketika operasional lebih tertata, pelanggan
+                        tidak perlu selalu menunggu balasan WhatsApp
+                        hanya untuk mengetahui status laundry mereka."
+                    </p>
+
+                    <div class="testimonial-author">
+
+                        <div class="testimonial-avatar">
+                            P
+                        </div>
+
+                        <div>
+
+                            <div class="testimonial-name">
+                                Pengalaman Pelanggan
+                            </div>
+
+                            <div class="testimonial-role">
+                                Informasi lebih jelas, pelayanan lebih nyaman
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         FAQ
+    ========================= -->
+
+    <section
+        class="faq"
+        id="faq"
+    >
+
+        <div class="container">
+
+            <div class="section-header animate-on-scroll">
+
+                <span class="section-label">
+                    ❓ FAQ
+                </span>
+
+                <h2 class="section-title">
+                    Sebelum Anda Mencoba
+                </h2>
+
+                <p class="section-subtitle">
+                    Beberapa pertanyaan yang mungkin muncul sebelum
+                    menggunakan Laundry28.
+                </p>
+
+            </div>
+
+            <div class="faq-list">
+
+                <div class="faq-item animate-on-scroll">
+
+                    <div
+                        class="faq-question"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <span>
+                            Apakah Laundry28 gratis?
+                        </span>
+
+                        <span class="faq-toggle">
+                            +
+                        </span>
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Ya. Paket dasar Laundry28 tersedia gratis.
+                            Tidak ada biaya langganan untuk penggunaan
+                            dasar yang tercantum pada paket gratis.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+
+                    <div
+                        class="faq-question"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <span>
+                            Apakah Laundry28 menggantikan karyawan?
+                        </span>
+
+                        <span class="faq-toggle">
+                            +
+                        </span>
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Tidak. Laundry28 adalah alat bantu pengelolaan.
+                            Tujuannya membantu owner dan staff bekerja
+                            dengan data dan alur yang lebih terstruktur,
+                            bukan menggantikan pekerjaan manusia.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+
+                    <div
+                        class="faq-question"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <span>
+                            Apakah pelanggan bisa mengetahui status laundry?
+                        </span>
+
+                        <span class="faq-toggle">
+                            +
+                        </span>
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Laundry28 dirancang dengan tracking status
+                            laundry agar informasi perkembangan pesanan
+                            dapat lebih mudah diketahui. Dengan begitu,
+                            pelanggan tidak harus selalu menunggu balasan
+                            WhatsApp hanya untuk menanyakan status cucian.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+
+                    <div
+                        class="faq-question"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <span>
+                            Apakah bisa digunakan offline?
+                        </span>
+
+                        <span class="faq-toggle">
+                            +
+                        </span>
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Laundry28 merupakan aplikasi cloud-based
+                            sehingga membutuhkan koneksi internet untuk
+                            sinkronisasi dan akses data dari server.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+
+                    <div
+                        class="faq-question"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <span>
+                            Bagaimana cara install?
+                        </span>
+
+                        <span class="faq-toggle">
+                            +
+                        </span>
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Download file APK Laundry28 dari halaman ini.
+                            Jika perangkat meminta izin, aktifkan izin
+                            untuk memasang aplikasi dari sumber yang
+                            diizinkan oleh Android, kemudian jalankan APK.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+
+                    <div
+                        class="faq-question"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <span>
+                            Apakah bisa untuk laundry dry clean?
+                        </span>
+
+                        <span class="faq-toggle">
+                            +
+                        </span>
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Laundry28 dapat digunakan untuk berbagai
+                            jenis layanan laundry. Layanan yang tersedia
+                            dapat disesuaikan dengan kebutuhan laundry Anda.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item animate-on-scroll">
+
+                    <div
+                        class="faq-question"
+                        role="button"
+                        tabindex="0"
+                    >
+                        <span>
+                            Apakah data saya tersimpan di cloud?
+                        </span>
+
+                        <span class="faq-toggle">
+                            +
+                        </span>
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Ya. Laundry28 menggunakan Supabase sebagai
+                            layanan backend dan penyimpanan data.
+                            Akses data membutuhkan koneksi internet.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         FINAL CTA
+    ========================= -->
+
+    <section class="cta">
+
+        <div class="container animate-on-scroll">
+
+            <h2>
+                Jangan Tunggu Laundry Semakin Rumit
+            </h2>
+
+            <p>
+                Mulai rapikan cara Anda mengelola laundry.
+                Ketika operasional lebih teratur, owner lebih mudah
+                mengontrol, staff lebih terarah, dan pelanggan
+                mendapatkan pelayanan yang lebih nyaman.
+            </p>
+
+            <a
+                data-download="true"
+                href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.1/app-release.apk"
+                class="btn btn-white btn-large"
+            >
+                <span class="btn-icon">
+                    ⬇️
+                </span>
+
+                Coba Laundry28 Gratis
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-grid">
+
+                <div>
+
+                    <div class="footer-brand">
+
+                        <span class="logo">
+                            🧺
+                        </span>
+
+                        <span>
+                            Laundry28
+                        </span>
+
+                    </div>
+
+                    <p class="footer-description">
+                        Aplikasi manajemen laundry yang membantu
+                        owner mengontrol order, operasional, dan
+                        informasi bisnis dalam satu aplikasi.
+                        Dikembangkan oleh Star28 Tech.
+                    </p>
+
+                    <div class="footer-social">
+
+                        <a
+                            href="#"
+                            title="Instagram"
+                            aria-label="Instagram"
+                        >
+                            📷
+                        </a>
+
+                        <a
+                            href="#"
+                            title="WhatsApp"
+                            aria-label="WhatsApp"
+                        >
+                            💬
+                        </a>
+
+                        <a
+                            href="mailto:info@star28tech.com"
+                            title="Email"
+                            aria-label="Email"
+                        >
+                            📧
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="footer-column">
+
+                    <h4>
+                        Produk
+                    </h4>
+
+                    <ul>
+
+                        <li>
+                            <a href="#masalah">
+                                Masalah Owner
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#solusi">
+                                Solusi
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#pelanggan">
+                                Pelanggan
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#fitur">
+                                Fitur
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#harga">
+                                Harga
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="footer-column">
+
+                    <h4>
+                        Download
+                    </h4>
+
+                    <ul>
+
+                        <li>
+                            <a
+                                data-download="true"
+                                href="https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.1/app-release.apk"
+                            >
+                                Download APK
+                            </a>
+                        </li>
+
+                        <li>
+                            <a
+                                href="https://github.com/rudi-prog/laundry28-updates/releases"
+                            >
+                                Riwayat Release
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#">
+                                Changelog
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="footer-column">
+
+                    <h4>
+                        Legal
+                    </h4>
+
+                    <ul>
+
+                        <li>
+                            <a href="/privacy-policy.html">
+                                Kebijakan Privasi
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/terms-of-service.html">
+                                Syarat & Ketentuan
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="mailto:info@star28tech.com">
+                                Hubungi Kami
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>
+                    © 2026 Laundry28 by Star28 Tech.
+                    All rights reserved.
+                </p>
+
+                <div class="footer-bottom-links">
+
+                    <a href="/privacy-policy.html">
+                        Privacy Policy
+                    </a>
+
+                    <a href="/terms-of-service.html">
+                        Terms of Service
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
     <script>
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 50); });
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        mobileMenuBtn.addEventListener('click', () => { mobileMenu.classList.toggle('active'); mobileMenuBtn.textContent = mobileMenu.classList.contains('active') ? '\u2715' : '\u2630'; });
-        mobileMenu.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { mobileMenu.classList.remove('active'); mobileMenuBtn.textContent = '\u2630'; }); });
-        document.querySelectorAll('.faq-question').forEach(question => { question.addEventListener('click', () => { const item = question.parentElement; const isActive = item.classList.contains('active'); document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('active')); if (!isActive) item.classList.add('active'); }); });
-        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-        document.querySelectorAll('.animate-on-scroll').forEach(el => { observer.observe(el); });
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function(e) { e.preventDefault(); const target = document.querySelector(this.getAttribute('href')); if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }); });
-        document.querySelectorAll('a[href*="app-release.apk"]').forEach(link => { link.addEventListener('click', () => { console.log('Download clicked:', new Date().toISOString()); }); });
+        "use strict";
+
+        /* =========================
+           NAVBAR SCROLL
+        ========================= */
+
+        const navbar =
+            document.getElementById("navbar");
+
+        window.addEventListener(
+            "scroll",
+            () => {
+                navbar.classList.toggle(
+                    "scrolled",
+                    window.scrollY > 50
+                );
+            },
+            {
+                passive: true
+            }
+        );
+
+        /* =========================
+           MOBILE MENU
+        ========================= */
+
+        const mobileMenuBtn =
+            document.getElementById(
+                "mobileMenuBtn"
+            );
+
+        const mobileMenu =
+            document.getElementById(
+                "mobileMenu"
+            );
+
+        function closeMobileMenu() {
+
+            mobileMenu.classList.remove(
+                "active"
+            );
+
+            mobileMenuBtn.textContent = "☰";
+
+            mobileMenuBtn.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            mobileMenuBtn.setAttribute(
+                "aria-label",
+                "Buka menu"
+            );
+        }
+
+        function toggleMobileMenu() {
+
+            const isActive =
+                mobileMenu.classList.toggle(
+                    "active"
+                );
+
+            mobileMenuBtn.textContent =
+                isActive
+                    ? "✕"
+                    : "☰";
+
+            mobileMenuBtn.setAttribute(
+                "aria-expanded",
+                String(isActive)
+            );
+
+            mobileMenuBtn.setAttribute(
+                "aria-label",
+                isActive
+                    ? "Tutup menu"
+                    : "Buka menu"
+            );
+        }
+
+        mobileMenuBtn.addEventListener(
+            "click",
+            toggleMobileMenu
+        );
+
+        mobileMenu
+            .querySelectorAll("a")
+            .forEach(
+                (link) => {
+
+                    link.addEventListener(
+                        "click",
+                        () => {
+                            closeMobileMenu();
+                        }
+                    );
+
+                }
+            );
+
+        /* =========================
+           CLOSE MOBILE MENU OUTSIDE
+        ========================= */
+
+        document.addEventListener(
+            "click",
+            (event) => {
+
+                if (
+                    !mobileMenu.contains(
+                        event.target
+                    ) &&
+                    !mobileMenuBtn.contains(
+                        event.target
+                    )
+                ) {
+
+                    closeMobileMenu();
+
+                }
+
+            }
+        );
+
+        /* =========================
+           FAQ
+        ========================= */
+
+        const faqItems =
+            document.querySelectorAll(
+                ".faq-item"
+            );
+
+        function toggleFaq(question) {
+
+            const item =
+                question.parentElement;
+
+            const isActive =
+                item.classList.contains(
+                    "active"
+                );
+
+            faqItems.forEach(
+                (faq) => {
+
+                    faq.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+            if (!isActive) {
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+        }
+
+        document
+            .querySelectorAll(
+                ".faq-question"
+            )
+            .forEach(
+                (question) => {
+
+                    question.addEventListener(
+                        "click",
+                        () => {
+
+                            toggleFaq(
+                                question
+                            );
+
+                        }
+                    );
+
+                    question.addEventListener(
+                        "keydown",
+                        (event) => {
+
+                            if (
+                                event.key ===
+                                    "Enter" ||
+                                event.key ===
+                                    " "
+                            ) {
+
+                                event.preventDefault();
+
+                                toggleFaq(
+                                    question
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+        /* =========================
+           SCROLL ANIMATION
+        ========================= */
+
+        const animatedElements =
+            document.querySelectorAll(
+                ".animate-on-scroll"
+            );
+
+        if (
+            "IntersectionObserver"
+            in window
+        ) {
+
+            const observer =
+                new IntersectionObserver(
+                    (entries) => {
+
+                        entries.forEach(
+                            (entry) => {
+
+                                if (
+                                    entry.isIntersecting
+                                ) {
+
+                                    entry.target.classList.add(
+                                        "visible"
+                                    );
+
+                                    observer.unobserve(
+                                        entry.target
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    },
+                    {
+                        threshold: 0.1,
+
+                        rootMargin:
+                            "0px 0px -50px 0px"
+                    }
+                );
+
+            animatedElements.forEach(
+                (element) => {
+
+                    observer.observe(
+                        element
+                    );
+
+                }
+            );
+
+        } else {
+
+            animatedElements.forEach(
+                (element) => {
+
+                    element.classList.add(
+                        "visible"
+                    );
+
+                }
+            );
+
+        }
+
+        /* =========================
+           SMOOTH SCROLL
+        ========================= */
+
+        document
+            .querySelectorAll(
+                'a[href^="#"]'
+            )
+            .forEach(
+                (anchor) => {
+
+                    anchor.addEventListener(
+                        "click",
+                        function (event) {
+
+                            const href =
+                                this.getAttribute(
+                                    "href"
+                                );
+
+                            if (
+                                !href ||
+                                href === "#"
+                            ) {
+
+                                return;
+
+                            }
+
+                            const target =
+                                document.querySelector(
+                                    href
+                                );
+
+                            if (target) {
+
+                                event.preventDefault();
+
+                                target.scrollIntoView(
+                                    {
+                                        behavior:
+                                            "smooth",
+
+                                        block:
+                                            "start"
+                                    }
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+        /* =========================
+           DOWNLOAD TRACKING
+        ========================= */
+
+        document
+            .querySelectorAll(
+                'a[data-download="true"]'
+            )
+            .forEach(
+                (link) => {
+
+                    link.addEventListener(
+                        "click",
+                        () => {
+
+                            console.log(
+                                "Laundry28 APK download clicked:",
+                                new Date().toISOString()
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        /* =========================
+           ESC KEY
+        ========================= */
+
+        document.addEventListener(
+            "keydown",
+            (event) => {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeMobileMenu();
+
+                }
+
+            }
+        );
     </script>
+
+    <!-- =========================
+         Dynamic Version Checker
+    ========================= -->
+
+    <script src="app-version.js"></script>
+
 </body>
 </html>
