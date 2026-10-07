@@ -16,9 +16,9 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlxZG1sc3NsemhsY2hidWlrbHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjM3NzIsImV4cCI6MjA4OTczOTc3Mn0.YPw0Zqgrtw9dYu5FCBXF67C5kOOfGzARzxcprlyMcp0';
 
     // Fallback URL (used if fetch fails)
-    const FALLBACK_VERSION = '1.0.1';
+    const FALLBACK_VERSION = '1.0.2';
     const FALLBACK_DOWNLOAD_URL =
-        'https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.1/app-release.apk';
+        'https://github.com/rudi-prog/laundry28-updates/releases/download/v1.0.2/app-release.apk';
 
     // ============================================
     // Supabase CDN (loaded dynamically)
